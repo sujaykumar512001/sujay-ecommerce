@@ -1,0 +1,184 @@
+<%- include('../partials/header') %>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Breadcrumb -->
+        <nav class="mb-6">
+            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                <li><a href="/users/profile" class="hover:text-blue-600">Profile</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="/users/orders" class="hover:text-blue-600">Orders</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-gray-900">Order Details</li>
+            </ol>
+        </nav>
+
+        <!-- Order Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Order #<%= order.orderNumber %></h1>
+                    <p class="text-gray-600">Placed on <%= new Date(order.createdAt).toLocaleDateString() %></p>
+                </div>
+                <div class="text-right">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                        <%= order.status === 'delivered' ? 'bg-green-100 text-green-800' : 
+                           order.status === 'cancelled' ? 'bg-red-100 text-red-800' : 
+                           order.status === 'processing' ? 'bg-blue-100 text-blue-800' : 
+                           'bg-yellow-100 text-yellow-800' %>">
+                        <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2">Order Total</h3>
+                    <p class="text-2xl font-bold text-blue-600">$<%= order.totalPrice.toFixed(2) %></p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2">Items</h3>
+                    <p class="text-lg font-medium"><%= order.items.length %> items</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2">Payment Status</h3>
+                    <p class="text-lg font-medium <%= order.isPaid ? 'text-green-600' : 'text-red-600' %>">
+                        <%= order.isPaid ? 'Paid' : 'Pending' %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Order Items</h2>
+            <div class="space-y-4">
+                <% order.items.forEach(item => { %>
+                <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <img src="<%= item.product.images[0] || '/placeholder.svg' %>" 
+                             alt="<%= item.product.name %>" 
+                             class="w-16 h-16 object-cover rounded-lg">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-medium text-gray-900"><%= item.product.name %></h3>
+                        <p class="text-sm text-gray-600">SKU: <%= item.sku || 'N/A' %></p>
+                        <p class="text-sm text-gray-600">Quantity: <%= item.quantity %></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-gray-900">$<%= item.price.toFixed(2) %></p>
+                        <p class="text-sm text-gray-600">$<%= (item.price * item.quantity).toFixed(2) %> total</p>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Shipping Information -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Shipping Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Shipping Address</h3>
+                    <div class="text-gray-600">
+                        <p><%= order.shippingAddress.street %></p>
+                        <% if (order.shippingAddress.apartment) { %>
+                        <p><%= order.shippingAddress.apartment %></p>
+                        <% } %>
+                        <p><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %></p>
+                        <p><%= order.shippingAddress.country %></p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Contact Information</h3>
+                    <div class="text-gray-600">
+                        <p><%= order.shippingAddress.phone %></p>
+                        <p><%= user.email %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Payment Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Payment Method</h3>
+                    <p class="text-gray-600"><%= order.payment.method %></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Payment Status</h3>
+                    <p class="<%= order.isPaid ? 'text-green-600' : 'text-red-600' %> font-medium">
+                        <%= order.isPaid ? 'Paid' : 'Pending' %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Timeline -->
+        <% if (order.tracking && order.tracking.length > 0) { %>
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Order Timeline</h2>
+            <div class="space-y-4">
+                <% order.tracking.forEach((track, index) => { %>
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-bold"><%= index + 1 %></span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900"><%= track.status %></h3>
+                        <p class="text-sm text-gray-600"><%= track.description %></p>
+                        <p class="text-xs text-gray-500"><%= new Date(track.timestamp).toLocaleString() %></p>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center">
+            <a href="/users/orders" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                ← Back to Orders
+            </a>
+            
+            <% if (['pending', 'processing'].includes(order.status)) { %>
+            <button onclick="cancelOrder('<%= order._id %>')" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                Cancel Order
+            </button>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+function cancelOrder(orderId) {
+    if (confirm('Are you sure you want to cancel this order?')) {
+        fetch(`/api/orders/${orderId}/cancel`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Order cancelled successfully');
+                window.location.reload();
+            } else {
+                alert('Failed to cancel order: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while cancelling the order');
+        });
+    }
+}
+</script>
+
+<%- include('../partials/footer') %> 

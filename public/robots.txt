@@ -1,0 +1,75 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /users/profile/
+Disallow: /orders/my-orders/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /node_modules/
+Disallow: /login/
+Disallow: /register/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+Disallow: /uploads/admin/
+Allow: /products/
+Allow: /client/
+Allow: /categories/
+Allow: /about/
+Allow: /contact/
+Allow: /privacy/
+Allow: /terms/
+Allow: /shipping/
+Allow: /returns/
+Allow: /faq/
+Allow: /uploads/products/
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Rate limiting for aggressive bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: SemrushBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: MJ12bot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: DotBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: BLEXBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: Screaming Frog SEO Spider
+Crawl-delay: 5
+Disallow: /admin/
+Disallow: /api/
+
+# Allow Google and Bing bots with normal crawl rate
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Crawl-delay: 1

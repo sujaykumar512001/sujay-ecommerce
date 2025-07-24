@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test - Public Directory</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <style>
+        .test-fallback {
+            background: red;
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border: 2px solid black;
+        }
+        .success {
+            background: green !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-fallback" id="testElement">
+        <h1>CSS Test Page (Public Directory)</h1>
+        <p>If you see this with red background, CSS is not loading properly.</p>
+        <p>If you see this with green background, CSS is working!</p>
+    </div>
+    
+    <div class="container">
+        <h2>Testing Bootstrap Classes</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Test Card</h5>
+                        <p class="card-text">This should be styled with Bootstrap.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('CSS Test Page Loaded');
+        // Check if CSS is loaded
+        const testElement = document.getElementById('testElement');
+        const computedStyle = window.getComputedStyle(testElement);
+        console.log('Background color:', computedStyle.backgroundColor);
+        
+        if (computedStyle.backgroundColor !== 'rgb(255, 0, 0)') {
+            testElement.classList.add('success');
+            console.log('✅ CSS is working!');
+        } else {
+            console.log('❌ CSS is not loading');
+        }
+    </script>
+</body>
+</html> 

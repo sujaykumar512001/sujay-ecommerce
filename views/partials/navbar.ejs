@@ -1,0 +1,119 @@
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-store me-2"></i>E-Store
+    </a>
+
+    <!-- Mobile toggle button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation items -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">
+            <i class="fas fa-home me-1"></i>Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/products">
+            <i class="fas fa-box me-1"></i>Products
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/client/shop-simple">
+            <i class="fas fa-shopping-bag me-1"></i>Shop
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-list me-1"></i>Categories
+          </a>
+          <ul class="dropdown-menu">
+            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+              <% categories.forEach(category => { %>
+                <li><a class="dropdown-item" href="/listings?category=<%= category %>"><%= category %></a></li>
+              <% }); %>
+            <li><hr class="dropdown-divider"></li>
+            <% } %>
+            <li><a class="dropdown-item" href="/listings">All Categories</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">
+            <i class="fas fa-info-circle me-1"></i>About
+          </a>
+        </li>
+      </ul>
+
+      <!-- Search form -->
+      <form class="d-flex me-3" action="/listings" method="GET">
+        <div class="search-container">
+          <input class="search-input" type="search" name="search" placeholder="Search products..." 
+                 value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+          <button class="search-btn" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- User actions -->
+      <ul class="navbar-nav">
+        <!-- Shopping Cart -->
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="/client/cart-simple">
+            <i class="fas fa-shopping-cart"></i>
+            <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <%= cartCount %>
+              </span>
+            <% } %>
+          </a>
+        </li>
+
+        <!-- User menu -->
+        <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user me-1"></i><%= currentUser.firstName || currentUser.name %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/users/profile">
+                <i class="fas fa-user me-2"></i>Profile
+              </a></li>
+              <li><a class="dropdown-item" href="/orders/my-orders">
+                <i class="fas fa-shopping-bag me-2"></i>My Orders
+              </a></li>
+              <% if (currentUser.role === 'admin') { %>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/admin">
+                  <i class="fas fa-cog me-2"></i>Admin Dashboard
+                </a></li>
+              <% } %>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">
+              <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register">
+              <i class="fas fa-user-plus me-1"></i>Register
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>

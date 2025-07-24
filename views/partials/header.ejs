@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    
+    <!-- Primary Meta Tags -->
+    <title><%= typeof title !== 'undefined' && title ? title : 'Yadav Collection' %> - Premium Fashion & Handmade Art</title>
+    <meta name="title" content="<%= typeof title !== 'undefined' && title ? title : 'Yadav Collection' %> - Premium Fashion & Handmade Art">
+    <meta name="description" content="<%= typeof description !== 'undefined' && description ? description : 'Discover premium fashion and handmade art at Yadav Collection. Quality clothing, accessories, and unique handmade pieces. Free shipping on orders over $50.' %>">
+    <meta name="keywords" content="<%= typeof keywords !== 'undefined' && keywords ? keywords : 'fashion, handmade art, clothing, accessories, premium fashion, Indian fashion, traditional clothing, modern fashion, online shopping, ecommerce, Yadav Collection, sustainable fashion, artisanal products' %>">
+    <meta name="author" content="Sujay Yadav">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Enhanced Mobile Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Yadav Collection">
+    <meta name="application-name" content="Yadav Collection">
+    <meta name="msapplication-TileColor" content="#10B981">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+    <meta name="theme-color" content="#10B981">
+    <meta name="msapplication-navbutton-color" content="#10B981">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yadavcollection.com<%= typeof originalUrl !== 'undefined' ? originalUrl : '' %>">
+    <meta property="og:title" content="<%= typeof title !== 'undefined' && title ? title : 'Yadav Collection' %> - Premium Fashion & Handmade Art">
+    <meta property="og:description" content="<%= typeof description !== 'undefined' && description ? description : 'Discover premium fashion and handmade art at Yadav Collection. Quality clothing, accessories, and unique handmade pieces.' %>">
+    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' && ogImage ? ogImage : 'https://yadavcollection.com/images/og-image.jpg' %>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Yadav Collection - Premium Fashion & Handmade Art">
+    <meta property="og:site_name" content="Yadav Collection">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="hi_IN">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://yadavcollection.com<%= typeof originalUrl !== 'undefined' ? originalUrl : '' %>">
+    <meta property="twitter:title" content="<%= typeof title !== 'undefined' && title ? title : 'Yadav Collection' %> - Premium Fashion & Handmade Art">
+    <meta property="twitter:description" content="<%= typeof description !== 'undefined' && description ? description : 'Discover premium fashion and handmade art at Yadav Collection. Quality clothing, accessories, and unique handmade pieces.' %>">
+    <meta property="twitter:image" content="<%= typeof ogImage !== 'undefined' && ogImage ? ogImage : 'https://yadavcollection.com/images/og-image.jpg' %>">
+    <meta property="twitter:image:alt" content="Yadav Collection - Premium Fashion & Handmade Art">
+    <meta property="twitter:site" content="@yadavcollection">
+    <meta property="twitter:creator" content="@sujayyadav">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="geo.region" content="IN">
+    <meta name="geo.placename" content="India">
+    <meta name="ICBM" content="20.5937, 78.9629">
+    <meta name="DC.title" content="Yadav Collection - Premium Fashion & Handmade Art">
+    <meta name="DC.creator" content="Sujay Yadav">
+    <meta name="DC.subject" content="Fashion, Handmade Art, Clothing, Accessories">
+    <meta name="DC.description" content="Discover premium fashion and handmade art at Yadav Collection. Quality clothing, accessories, and unique handmade pieces.">
+    <meta name="DC.publisher" content="Yadav Collection">
+    <meta name="DC.contributor" content="Sujay Yadav">
+    <meta name="DC.date" content="2024">
+    <meta name="DC.type" content="E-commerce">
+    <meta name="DC.format" content="text/html">
+    <meta name="DC.identifier" content="https://yadavcollection.com">
+    <meta name="DC.language" content="en">
+    <meta name="DC.coverage" content="Worldwide">
+    <meta name="DC.rights" content="Copyright 2024 Yadav Collection">
+    
+    <!-- Performance and Security -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yadavcollection.com<%= typeof originalUrl !== 'undefined' ? originalUrl : '' %>">
+    
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Preconnect and DNS Prefetch for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//www.google-analytics.com">
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+        /* Critical styles for immediate rendering */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .navbar { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .hero-section { 
+            min-height: 80vh; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+        .nav-content { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .nav-logo { 
+            text-decoration: none; 
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        .logo-text { 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: white;
+            line-height: 1.2;
+        }
+        .logo-tagline {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+            font-weight: 400;
+        }
+        .nav-links { 
+            display: flex; 
+            gap: 32px;
+            align-items: center;
+        }
+        .nav-link { 
+            color: #e0e7ff; 
+            text-decoration: none; 
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: white;
+        }
+        .auth-buttons { 
+            display: flex; 
+            gap: 12px;
+            align-items: center;
+        }
+        .auth-btn { 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .auth-btn.login-btn { 
+            background: rgba(255,255,255,0.1); 
+            color: #e0e7ff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .auth-btn.login-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .auth-btn.register-btn { 
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .auth-btn.register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Mobile responsive critical styles */
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 16px;
+                padding: 12px 0;
+            }
+            .nav-links {
+                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .auth-buttons {
+                gap: 8px;
+            }
+            .auth-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+            .logo-text {
+                font-size: 24px;
+            }
+            .logo-tagline {
+                font-size: 10px;
+            }
+        }
+        
+        /* Loading animation */
+        .loading {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <!-- Custom Stylesheets with Performance Optimization -->
+    <link rel="stylesheet" href="/CSS/style.css?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="/CSS/home.css?v=<%= Date.now() %>">
+    
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <meta name="version" content="yadav-collection-v7-clean">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Yadav Collection",
+      "alternateName": "Yadav Collection - Premium Fashion & Handmade Art",
+      "url": "https://yadavcollection.com",
+      "logo": "https://yadavcollection.com/images/logo.png",
+      "description": "Premium fashion and handmade art ecommerce store offering quality clothing, accessories, and unique handmade pieces",
+      "foundingDate": "2024",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "email": "contact@yadavcollection.com",
+        "availableLanguage": "English"
+      },
+      "sameAs": [
+        "https://facebook.com/yadavcollection",
+        "https://instagram.com/yadavcollection",
+        "https://twitter.com/yadavcollection"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Fashion & Handmade Art Collection",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Premium Fashion Clothing"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Handmade Art Pieces"
+            }
+          }
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://yadavcollection.com/products?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <% if (typeof structuredData !== 'undefined' && structuredData) { %>
+    <script type="application/ld+json">
+    <%= JSON.stringify(structuredData) %>
+    </script>
+    <% } %>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <!-- Core Scripts with Performance Optimization -->
+    <script src="/js/simple-navigation.js?v=<%= Date.now() %>&v11=debug" defer></script>
+    <!-- Cart functionality is now included in script.js -->
+    
+    <!-- Authentication Scripts -->
+    <script src="/js/auth-manager.js?v=<%= Date.now() %>&v2=enhanced" defer></script>
+    <script src="/js/auth-navigation.js?v=<%= Date.now() %>&v9=enhanced" defer></script>
+    
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/socket-client.js?v=<%= Date.now() %>&v1=real-time" defer></script>
+    
+    <!-- Development Scripts -->
+    <% if (process.env.NODE_ENV === 'development') { %>
+        <!-- Debug scripts can be added here when needed -->
+    <% } %>
+    
+    <!-- Utility Scripts -->
+    <script src="/js/logout-handler.js?v=<%= Date.now() %>&v8=debug" defer></script>
+    
+    <!-- User Dropdown Functionality -->
+    <script>
+        console.log('[Dropdown] Script loaded - version debug');
+        
+        // User dropdown toggle function
+        function toggleUserDropdown() {
+            console.log('[Dropdown] Toggle function called');
+            
+            const menu = document.getElementById('userDropdownMenu');
+            const button = document.getElementById('userDropdown');
+            
+            if (!menu || !button) {
+                console.error('[Dropdown] Elements not found:', { menu: !!menu, button: !!button });
+                return;
+            }
+            
+            // Check if menu is currently visible
+            const isVisible = menu.style.display === 'block' || menu.classList.contains('show');
+            
+            console.log('[Dropdown] Current visibility:', isVisible);
+            console.log('[Dropdown] Menu display style:', menu.style.display);
+            console.log('[Dropdown] Menu has show class:', menu.classList.contains('show'));
+            
+            if (isVisible) {
+                // Hide
+                menu.style.display = 'none';
+                menu.classList.remove('show');
+                button.setAttribute('aria-expanded', 'false');
+                console.log('[Dropdown] Hidden');
+            } else {
+                // Show
+                menu.style.display = 'block';
+                menu.classList.add('show');
+                button.setAttribute('aria-expanded', 'true');
+                console.log('[Dropdown] Shown');
+            }
+        }
+        
+        // Function to hide dropdown
+        function hideDropdown() {
+            const menu = document.getElementById('userDropdownMenu');
+            const button = document.getElementById('userDropdown');
+            
+            if (menu) {
+                menu.style.display = 'none';
+                menu.classList.remove('show');
+            }
+            if (button) {
+                button.setAttribute('aria-expanded', 'false');
+            }
+            console.log('[Dropdown] Hidden by external call');
+        }
+        
+        // Logout confirmation function
+        function confirmLogout() {
+            const confirmed = confirm('Are you sure you want to log out? You will need to sign in again to access your account.');
+            if (confirmed) {
+                console.log('[Header] Logout confirmed, proceeding...');
+                
+                // Close dropdown first
+                hideDropdown();
+                
+                // Use enhanced logout handler if available
+                if (window.logoutHandler) {
+                    console.log('[Header] Using enhanced logout handler');
+                    window.logoutHandler.handleLogout({ preventDefault: () => {} });
+                } else {
+                    console.log('[Header] Using fallback logout');
+                    // Fallback to direct logout
+                    window.location.href = '/users/logout';
+                }
+            } else {
+                console.log('[Header] Logout cancelled by user');
+            }
+        }
+        
+        // Test function to manually show dropdown
+        function testShowDropdown() {
+            console.log('[Test] Manually showing dropdown...');
+            const menu = document.getElementById('userDropdownMenu');
+            if (menu) {
+                menu.style.display = 'block';
+                menu.classList.add('show');
+                menu.style.border = '3px solid blue';
+                console.log('[Test] Dropdown should now be visible with blue border');
+            } else {
+                console.error('[Test] Menu element not found');
+            }
+        }
+        
+        // Make test function globally available
+        window.testShowDropdown = testShowDropdown;
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Dropdown] DOM loaded, initializing...');
+            
+            const button = document.getElementById('userDropdown');
+            const menu = document.getElementById('userDropdownMenu');
+            
+            console.log('[Dropdown] Button found:', !!button);
+            console.log('[Dropdown] Menu found:', !!menu);
+            
+            if (button && menu) {
+                // Remove any existing onclick handlers
+                button.removeAttribute('onclick');
+                
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('[Dropdown] Button clicked');
+                    toggleUserDropdown();
+                };
+                console.log('[Dropdown] Click handler attached');
+                
+                // Test the dropdown is working
+                console.log('[Dropdown] Initial menu state - display:', menu.style.display);
+                console.log('[Dropdown] Initial menu state - show class:', menu.classList.contains('show'));
+            } else {
+                console.error('[Dropdown] Button or menu not found');
+            }
+            
+            // Close on outside click
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('userDropdownContainer');
+                const menu = document.getElementById('userDropdownMenu');
+                
+                if (container && !container.contains(e.target) && menu) {
+                    hideDropdown();
+                    console.log('[Dropdown] Closed by outside click');
+                }
+            });
+            
+            // Close on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const menu = document.getElementById('userDropdownMenu');
+                    
+                    if (menu && (menu.style.display === 'block' || menu.classList.contains('show') || menu.offsetHeight > 0)) {
+                        hideDropdown();
+                        console.log('[Dropdown] Closed by escape key');
+                    }
+                }
+            });
+            
+            console.log('[Dropdown] Initialization complete');
+        });
+        
+        // Add enhanced CSS for dropdown
+        const style = document.createElement('style');
+        style.textContent = `
+            #userDropdownContainer {
+                position: relative;
+                display: inline-block;
+            }
+            #userDropdownMenu {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                z-index: 9999;
+                min-width: 250px;
+                background: white;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                margin-top: 5px;
+                display: none;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            #userDropdownMenu.show {
+                display: block !important;
+                opacity: 1;
+                transform: translateY(0);
+            }
+            #userDropdownMenu[style*="display: block"] {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            #userDropdownMenu li {
+                margin: 0;
+                padding: 0;
+            }
+            .dropdown-item {
+                padding: 12px 16px;
+                color: #333;
+                text-decoration: none;
+                display: block;
+                transition: background-color 0.2s ease;
+                cursor: pointer;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                font-size: 14px;
+            }
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #333;
+                text-decoration: none;
+            }
+            .dropdown-item:first-child {
+                border-radius: 8px 8px 0 0;
+            }
+            .dropdown-item:last-child {
+                border-radius: 0 0 8px 8px;
+            }
+            .dropdown-divider {
+                margin: 0;
+                border-top: 1px solid #e9ecef;
+                height: 1px;
+            }
+            .dropdown-header {
+                padding: 12px 16px;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+                font-weight: 600;
+                color: #495057;
+                border-radius: 8px 8px 0 0;
+            }
+            .dropdown-header .fw-bold {
+                color: #212529;
+                font-size: 16px;
+            }
+            .dropdown-header small {
+                font-size: 0.875em;
+                color: #6c757d;
+            }
+            
+            /* Mobile responsive adjustments */
+            @media (max-width: 768px) {
+                #userDropdownMenu {
+                    position: fixed;
+                    top: 70px;
+                    right: 10px;
+                    left: 10px;
+                    min-width: auto;
+                    max-width: 300px;
+                    margin: 0 auto;
+                }
+                .dropdown-item {
+                    padding: 16px 20px;
+                    font-size: 16px;
+                }
+            }
+            
+            /* Orders Section Styles */
+            .orders-section {
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+            }
+            
+            .orders-section:hover {
+                background-color: #f8f9fa;
+            }
+            
+            .orders-section.expanded {
+                background-color: #e3f2fd;
+            }
+            
+            .orders-section .fa-chevron-down {
+                transition: transform 0.3s ease;
+            }
+            
+            .orders-section.expanded .fa-chevron-down {
+                transform: rotate(180deg);
+            }
+            
+            .orders-list {
+                max-height: 300px;
+                overflow-y: auto;
+                padding: 0;
+            }
+            
+            .header-order-item {
+                padding: 8px 16px;
+                border-bottom: 1px solid #f1f3f4;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+                font-size: 13px;
+            }
+            
+            .header-order-item:hover {
+                background-color: #f8f9fa;
+            }
+            
+            .header-order-item:last-child {
+                border-bottom: none;
+            }
+            
+            .header-order-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 4px;
+            }
+            
+            .header-order-id {
+                font-weight: 600;
+                color: #374151;
+                font-size: 12px;
+            }
+            
+            .header-order-status {
+                padding: 2px 6px;
+                border-radius: 10px;
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            
+            .header-order-status.pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+            
+            .header-order-status.processing {
+                background: #cce5ff;
+                color: #004085;
+            }
+            
+            .header-order-status.shipped {
+                background: #d1ecf1;
+                color: #0c5460;
+            }
+            
+            .header-order-status.delivered {
+                background: #d4edda;
+                color: #155724;
+            }
+            
+            .header-order-status.cancelled {
+                background: #f8d7da;
+                color: #721c24;
+            }
+            
+            .header-order-meta {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 11px;
+                color: #6c757d;
+            }
+            
+            .header-order-date {
+                color: #6c757d;
+            }
+            
+            .header-order-total {
+                font-weight: 600;
+                color: #374151;
+            }
+            
+            .header-order-details {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                background: #f8f9fa;
+                margin: 4px -16px -8px -16px;
+                padding: 0 16px;
+            }
+            
+            .header-order-details.expanded {
+                max-height: 200px;
+                padding: 8px 16px;
+            }
+            
+            .header-order-items {
+                font-size: 11px;
+                color: #6c757d;
+                margin-bottom: 4px;
+            }
+            
+            .header-order-summary {
+                font-size: 11px;
+                color: #6c757d;
+                border-top: 1px solid #e9ecef;
+                padding-top: 4px;
+            }
+            
+            .header-order-actions {
+                display: flex;
+                gap: 4px;
+                margin-top: 4px;
+            }
+            
+            .header-order-btn {
+                padding: 2px 6px;
+                font-size: 10px;
+                border-radius: 4px;
+                text-decoration: none;
+                border: 1px solid #dee2e6;
+                background: white;
+                color: #6c757d;
+                transition: all 0.2s ease;
+            }
+            
+            .header-order-btn:hover {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+                text-decoration: none;
+            }
+            
+            .header-order-btn.primary {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+            
+            .header-order-btn.primary:hover {
+                background: #0056b3;
+                border-color: #0056b3;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Header Orders Functionality
+        let headerOrders = [];
+        let ordersSectionExpanded = false;
+        
+        // Toggle orders section in header dropdown
+        function toggleOrdersSection() {
+            const ordersSection = document.querySelector('.orders-section');
+            const ordersToggle = document.getElementById('ordersToggle');
+            const ordersListContainer = document.getElementById('ordersListContainer');
+            const ordersLoadingItem = document.getElementById('ordersLoadingItem');
+            const noOrdersItem = document.getElementById('noOrdersItem');
+            
+            if (ordersSectionExpanded) {
+                // Collapse
+                ordersSection.classList.remove('expanded');
+                ordersListContainer.style.display = 'none';
+                noOrdersItem.style.display = 'none';
+                ordersSectionExpanded = false;
+            } else {
+                // Expand and load orders
+                ordersSection.classList.add('expanded');
+                loadHeaderOrders();
+                ordersSectionExpanded = true;
+            }
+        }
+        
+        // Load orders for header dropdown
+        async function loadHeaderOrders() {
+            const ordersListContainer = document.getElementById('ordersListContainer');
+            const ordersLoadingItem = document.getElementById('ordersLoadingItem');
+            const noOrdersItem = document.getElementById('noOrdersItem');
+            const ordersList = document.getElementById('ordersList');
+            
+            try {
+                // Show loading state
+                ordersLoadingItem.style.display = 'block';
+                ordersListContainer.style.display = 'none';
+                noOrdersItem.style.display = 'none';
+                
+                // Fetch orders from API
+                const response = await fetch('/orders/api/my-orders', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+                
+                headerOrders = await response.json();
+                
+                // Hide loading, show content
+                ordersLoadingItem.style.display = 'none';
+                
+                if (headerOrders.length === 0) {
+                    noOrdersItem.style.display = 'block';
+                } else {
+                    ordersListContainer.style.display = 'block';
+                    renderHeaderOrders(headerOrders);
+                }
+                
+            } catch (error) {
+                console.error('Error loading header orders:', error);
+                ordersLoadingItem.style.display = 'none';
+                noOrdersItem.style.display = 'block';
+                noOrdersItem.innerHTML = `
+                    <div class="dropdown-item text-center text-muted">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading orders
+                    </div>
+                `;
+            }
+        }
+        
+        // Render orders in header dropdown
+        function renderHeaderOrders(ordersList) {
+            const ordersListEl = document.getElementById('ordersList');
+            
+            if (ordersList.length === 0) {
+                ordersListEl.innerHTML = '<div class="dropdown-item text-center text-muted">No orders found</div>';
+                return;
+            }
+            
+            // Show only the most recent 3 orders to keep dropdown manageable
+            const recentOrders = ordersList.slice(0, 3);
+            
+            ordersListEl.innerHTML = recentOrders.map((order, index) => `
+                <div class="header-order-item" onclick="toggleHeaderOrderDetails('${order._id}')">
+                    <div class="header-order-header">
+                        <span class="header-order-id">Order #${order._id.slice(-8).toUpperCase()}</span>
+                        <span class="header-order-status ${order.status}">${order.status}</span>
+                    </div>
+                    <div class="header-order-meta">
+                        <span class="header-order-date">${new Date(order.createdAt).toLocaleDateString()}</span>
+                        <span class="header-order-total">$${order.total.toFixed(2)}</span>
+                    </div>
+                    <div class="header-order-details" id="header-details-${order._id}">
+                        <div class="header-order-items">
+                            <strong>Items:</strong> ${order.items.length} item${order.items.length !== 1 ? 's' : ''}
+                        </div>
+                        <div class="header-order-summary">
+                            <div>Subtotal: $${order.subtotal.toFixed(2)}</div>
+                            <div>Shipping: $${order.shipping.toFixed(2)}</div>
+                            <div>Tax: $${order.tax.toFixed(2)}</div>
+                        </div>
+                        <div class="header-order-actions">
+                            <a href="/orders/${order._id}" class="header-order-btn primary">View</a>
+                            <a href="/users/profile#orders" class="header-order-btn">All Orders</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add "View All Orders" link if there are more than 3 orders
+            if (ordersList.length > 3) {
+                ordersListEl.innerHTML += `
+                    <div class="header-order-item text-center">
+                        <a href="/users/profile#orders" class="header-order-btn primary">
+                            View All ${ordersList.length} Orders
+                        </a>
+                    </div>
+                `;
+            }
+        }
+        
+        // Toggle individual order details in header
+        function toggleHeaderOrderDetails(orderId) {
+            const detailsEl = document.getElementById(`header-details-${orderId}`);
+            
+            if (detailsEl.classList.contains('expanded')) {
+                detailsEl.classList.remove('expanded');
+            } else {
+                detailsEl.classList.add('expanded');
+            }
+        }
+    </script>
+</head>
+<body class="loading">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex flex-column" href="/" aria-label="Yadav Collection - Premium Fashion & Handmade Art">
+                <span class="fw-bold fs-4 text-white">Yadav Collection</span>
+                <span class="small text-light opacity-75">Premium Fashion & Handmade Art</span>
+            </a>
+            
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/" id="homeLink" aria-label="Home page">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/products" id="productsLink" aria-label="Browse all products">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/products/showcase" aria-label="Beautiful product showcase">
+                            <i class="fas fa-images"></i>
+                            <span>Showcase</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" href="/products?category=Handmade" aria-label="Handmade art collection">
+                            <i class="fas fa-palette"></i>
+                            <span>Handmade Art</span>
+                        </a>
+                    </li>
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center gap-2" href="/orders/my-orders" aria-label="View your orders">
+                                <i class="fas fa-file-alt"></i>
+                                <span>My Orders</span>
+                            </a>
+                        </li>
+                        <% if (user.role === 'admin') { %>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-2" href="/admin" aria-label="Admin dashboard">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>Admin</span>
+                                </a>
+                            </li>
+                        <% } %>
+                    <% } %>
+                </ul>
+                
+                <!-- User Menu -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Cart Icon -->
+                    <a href="/client/cart" class="btn btn-outline-light position-relative" id="cartLink">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount" style="display: none;">0</span>
+                    </a>
+                    
+                    <% if (typeof user !== 'undefined' && user && user._id) { %>
+                        <!-- User is logged in - show user dropdown -->
+                        <div class="position-relative" id="userDropdownContainer">
+                            <button class="btn btn-outline-light" type="button" id="userDropdown" aria-expanded="false" onclick="toggleUserDropdown()">
+                                <i class="fas fa-user me-2"></i>
+                                <%= user.firstName || user.username %> <%= user.lastName || '' %>
+                                <i class="fas fa-chevron-down ms-2"></i>
+                            </button>
+                            <ul id="userDropdownMenu" style="display: none;">
+                                <!-- User Profile Header -->
+                                <li class="dropdown-header">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>
+                                        <div>
+                                            <div class="fw-bold"><%= user.firstName || user.username %> <%= user.lastName || '' %></div>
+                                            <small class="text-muted"><%= user.email %></small>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/users/profile"><i class="fas fa-user-edit me-2"></i>Edit Profile</a></li>
+                                
+                                <!-- Orders Section -->
+                                <li class="dropdown-item orders-section" onclick="toggleOrdersSection()">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-shopping-bag me-2"></i>My Orders</span>
+                                        <i class="fas fa-chevron-down" id="ordersToggle"></i>
+                                    </div>
+                                </li>
+                                
+                                <!-- Orders Loading State -->
+                                <li id="ordersLoadingItem" style="display: none;">
+                                    <div class="dropdown-item text-center">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <span class="text-muted">Loading orders...</span>
+                                    </div>
+                                </li>
+                                
+                                <!-- Orders List -->
+                                <li id="ordersListContainer" style="display: none;">
+                                    <div id="ordersList" class="orders-list"></div>
+                                </li>
+                                
+                                <!-- No Orders State -->
+                                <li id="noOrdersItem" style="display: none;">
+                                    <div class="dropdown-item text-center text-muted">
+                                        <i class="fas fa-shopping-bag me-2"></i>
+                                        No orders yet
+                                    </div>
+                                </li>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="confirmLogout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    <% } else { %>
+                        <!-- User is not logged in - show login/register buttons -->
+                        <div class="d-flex gap-2" id="authButtons">
+                            <a href="/users/login" class="btn btn-outline-light" aria-label="Sign in to your account">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                            <a href="/users/register" class="btn btn-success" aria-label="Create your account">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </a>
+                            <a href="/users/demo" class="btn btn-outline-light" aria-label="View authentication demo">
+                                <i class="fas fa-users me-2"></i>Demo
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if (typeof flash !== 'undefined' && flash.length > 0) { %>
+        <div class="container mt-3">
+            <% flash.forEach(function(message) { %>
+                <div class="alert alert-<%= message.type === 'error' ? 'danger' : message.type %> alert-dismissible fade show" role="alert">
+                    <i class="fas fa-<%= message.type === 'success' ? 'check-circle' : message.type === 'error' ? 'exclamation-triangle' : 'info-circle' %> me-2"></i>
+                    <%= message.text %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+    
+    <main id="main-content">
