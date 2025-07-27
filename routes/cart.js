@@ -7,77 +7,43 @@ const { authenticateToken, authenticateTokenWeb, optionalAuth } = require('../mi
 const asyncHandler = require('../utils/asyncHandler');
 const CONSTANTS = require('../config/constants');
 
-// Get cart page
-router.get('/', asyncHandler(async (req, res) => {
-    let cart = req.session.cart || [];
-    let cartItems = [];
-    let total = 0;
-    let subtotal = 0;
-    let tax = 0;
-    let shipping = 0;
-    
-    if (cart.length > 0) {
-        // Get product details for cart items
-        const productIds = cart.map(item => item.productId);
-        const products = await Product.find({ _id: { $in: productIds } }).lean();
-        
-        cartItems = cart.map(item => {
-            const product = products.find(p => p._id.toString() === item.productId);
-            if (product) {
-                const itemTotal = product.price * item.quantity;
-                subtotal += itemTotal;
-                return {
-                    ...item,
-                    product,
-                    itemTotal
-                };
-            }
-            return null;
-        }).filter(Boolean);
-        
-        // Calculate totals
-        tax = subtotal * CONSTANTS.TAX_RATE; // Configurable tax rate
-        shipping = subtotal > CONSTANTS.FREE_SHIPPING_THRESHOLD ? 0 : CONSTANTS.SHIPPING_COST; // Configurable shipping
-        total = subtotal + tax + shipping;
-    }
-    
-    res.render('client/cart', {
-        title: 'Shopping Cart',
-        cartItems,
-        subtotal,
-        tax,
-        shipping,
-        total,
-        couponDiscount: 0, // Coupon discount (calculated separately)
-        user: req.user
-    });
-}));
+// Cart page route removed - handled by client routes
 
 // Add item to cart
-router.post('/add', asyncHandler(async (req, res) => {
-        const { productId, quantity = 1 } = req.body;
+router.post('/add', optionalAuth, asyncHandler(async (req, res) => {
+    console.log('Cart add request:', {
+        body: req.body,
+        session: req.session ? 'exists' : 'missing',
+        cart: req.session?.cart ? req.session.cart.length : 'no cart'
+    });
+    
+    const { productId, quantity = 1 } = req.body;
         
     if (!productId) {
+        console.log('No productId provided');
         return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ success: false, message: CONSTANTS.ERROR_MESSAGES.INVALID_INPUT });
     }
     
     // Verify product exists and has stock
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(CONSTANTS.STATUS_CODES.NOT_FOUND).json({ success: false, message: CONSTANTS.ERROR_MESSAGES.NOT_FOUND });
-        }
+    const product = await Product.findById(productId);
+    if (!product) {
+        console.log('Product not found:', productId);
+        return res.status(CONSTANTS.STATUS_CODES.NOT_FOUND).json({ success: false, message: CONSTANTS.ERROR_MESSAGES.NOT_FOUND });
+    }
 
     if (product.stock < quantity) {
+        console.log('Insufficient stock:', { requested: quantity, available: product.stock });
         return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ 
             success: false, 
-            message: `Only ${product.stockQuantity} items available in stock` 
+            message: `Only ${product.stock} items available in stock` 
         });
     }
     
     // Initialize cart if it doesn't exist
-        if (!req.session.cart) {
-            req.session.cart = [];
-        }
+    if (!req.session.cart) {
+        console.log('Initializing new cart');
+        req.session.cart = [];
+    }
 
     // Check if item already exists in cart
     const existingItemIndex = req.session.cart.findIndex(
@@ -88,12 +54,14 @@ router.post('/add', asyncHandler(async (req, res) => {
         // Update quantity
         const newQuantity = req.session.cart[existingItemIndex].quantity + quantity;
         if (newQuantity > product.stock) {
+            console.log('Cannot add more items - stock limit');
             return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ 
                 success: false, 
                 message: `Cannot add more than ${product.stock} items` 
             });
         }
         req.session.cart[existingItemIndex].quantity = newQuantity;
+        console.log('Updated existing item quantity:', newQuantity);
     } else {
         // Add new item
         req.session.cart.push({
@@ -101,21 +69,89 @@ router.post('/add', asyncHandler(async (req, res) => {
             quantity,
             addedAt: new Date()
         });
+        console.log('Added new item to cart');
     }
     
     // Calculate cart totals
     const cartTotal = req.session.cart.reduce((total, item) => total + item.quantity, 0);
     
-    res.json({
-        success: true,
-        message: 'Item added to cart',
-        cartTotal,
-        cartItems: req.session.cart.length
+    console.log('Cart add success:', { cartTotal, cartItems: req.session.cart.length });
+    
+    // Save session to ensure cart data is persisted
+    req.session.save((err) => {
+        if (err) {
+            console.error('Session save error in cart add:', err);
+            return res.status(500).json({ success: false, message: 'Failed to save cart' });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Item added to cart',
+            cartTotal,
+            cartItems: req.session.cart.length
+        });
     });
 }));
 
-// Update cart item quantity
-router.put('/update/:productId', asyncHandler(async (req, res) => {
+// Update cart item quantity (POST method for JavaScript compatibility)
+router.post('/update', optionalAuth, asyncHandler(async (req, res) => {
+    const { productId, quantity } = req.body;
+
+    if (!req.session.cart) {
+        return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ success: false, message: 'Cart is empty' });
+    }
+
+    const itemIndex = req.session.cart.findIndex(item => item.productId === productId);
+    if (itemIndex === -1) {
+        return res.status(CONSTANTS.STATUS_CODES.NOT_FOUND).json({ success: false, message: 'Item not found in cart' });
+    }
+
+    // Validate quantity
+    if (quantity <= 0) {
+        // Remove item if quantity is 0 or negative
+        req.session.cart.splice(itemIndex, 1);
+        
+        // Save session to ensure cart data is persisted
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error in cart update (remove):', err);
+                return res.status(500).json({ success: false, message: 'Failed to save cart' });
+            }
+            
+            res.json({ success: true, message: 'Item removed from cart' });
+        });
+        return;
+    }
+    
+    // Check stock availability
+    const product = await Product.findById(productId);
+    if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    
+    if (quantity > product.stock) {
+        return res.status(400).json({ 
+            success: false, 
+            message: `Only ${product.stock} items available in stock` 
+        });
+    }
+    
+    // Update quantity
+    req.session.cart[itemIndex].quantity = quantity;
+    
+    // Save session to ensure cart data is persisted
+    req.session.save((err) => {
+        if (err) {
+            console.error('Session save error in cart update:', err);
+            return res.status(500).json({ success: false, message: 'Failed to save cart' });
+        }
+        
+        res.json({ success: true, message: 'Cart updated' });
+    });
+}));
+
+// Update cart item quantity (PUT method for REST compliance)
+router.put('/update/:productId', optionalAuth, asyncHandler(async (req, res) => {
     const { productId } = req.params;
     const { quantity } = req.body;
 
@@ -152,11 +188,45 @@ router.put('/update/:productId', asyncHandler(async (req, res) => {
     // Update quantity
     req.session.cart[itemIndex].quantity = quantity;
     
-    res.json({ success: true, message: 'Cart updated' });
+    // Save session to ensure cart data is persisted
+    req.session.save((err) => {
+        if (err) {
+            console.error('Session save error in cart update:', err);
+            return res.status(500).json({ success: false, message: 'Failed to save cart' });
+        }
+        
+        res.json({ success: true, message: 'Cart updated' });
+    });
 }));
 
-// Remove item from cart
-router.delete('/remove/:productId', asyncHandler(async (req, res) => {
+// Remove item from cart (POST method for JavaScript compatibility)
+router.post('/remove', optionalAuth, asyncHandler(async (req, res) => {
+    const { productId } = req.body;
+
+    if (!req.session.cart) {
+        return res.status(400).json({ success: false, message: 'Cart is empty' });
+    }
+
+    const itemIndex = req.session.cart.findIndex(item => item.productId === productId);
+    if (itemIndex === -1) {
+        return res.status(404).json({ success: false, message: 'Item not found in cart' });
+    }
+    
+    req.session.cart.splice(itemIndex, 1);
+    
+    // Save session to ensure cart data is persisted
+    req.session.save((err) => {
+        if (err) {
+            console.error('Session save error in cart remove:', err);
+            return res.status(500).json({ success: false, message: 'Failed to save cart' });
+        }
+        
+        res.json({ success: true, message: 'Item removed from cart' });
+    });
+}));
+
+// Remove item from cart (DELETE method for REST compliance)
+router.delete('/remove/:productId', optionalAuth, asyncHandler(async (req, res) => {
         const { productId } = req.params;
 
         if (!req.session.cart) {
@@ -170,28 +240,43 @@ router.delete('/remove/:productId', asyncHandler(async (req, res) => {
     
     req.session.cart.splice(itemIndex, 1);
     
-    res.json({ success: true, message: 'Item removed from cart' });
+    // Save session to ensure cart data is persisted
+    req.session.save((err) => {
+        if (err) {
+            console.error('Session save error in cart remove:', err);
+            return res.status(500).json({ success: false, message: 'Failed to save cart' });
+        }
+        
+        res.json({ success: true, message: 'Item removed from cart' });
+    });
 }));
 
 // Clear cart
-router.delete('/clear', asyncHandler(async (req, res) => {
+router.delete('/clear', authenticateTokenWeb, asyncHandler(async (req, res) => {
     req.session.cart = [];
-    res.json({ success: true, message: 'Cart cleared' });
+    res.json({ 
+        success: true, 
+        message: 'Cart cleared successfully',
+        cartItems: 0
+    });
 }));
 
 // Get cart count (for header/mini cart)
-router.get('/count', asyncHandler(async (req, res) => {
+router.get('/count', optionalAuth, asyncHandler(async (req, res) => {
+    console.log('Cart count request - session cart:', req.session?.cart ? req.session.cart.length : 'no cart');
     const cart = req.session.cart || [];
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
     
+    console.log('Cart count response:', cartCount);
+    
     res.json({
         success: true,
-        cartCount
+        count: cartCount
     });
 }));
 
 // Get cart summary (for header/mini cart)
-router.get('/summary', asyncHandler(async (req, res) => {
+router.get('/summary', optionalAuth, asyncHandler(async (req, res) => {
     const cart = req.session.cart || [];
     let cartItems = [];
     let total = 0;
@@ -229,42 +314,8 @@ router.get('/summary', asyncHandler(async (req, res) => {
     });
 }));
 
-// Move item from cart to wishlist
-router.post('/move-to-wishlist/:productId', authenticateTokenWeb, asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-    
-    if (!req.session.cart) {
-        return res.status(400).json({ success: false, message: 'Cart is empty' });
-    }
-    
-    const itemIndex = req.session.cart.findIndex(item => item.productId === productId);
-    if (itemIndex === -1) {
-        return res.status(404).json({ success: false, message: 'Item not found in cart' });
-    }
-    
-    // Add to user's wishlist
-    const user = await User.findById(req.user._id);
-    if (!user.wishlist) {
-        user.wishlist = [];
-    }
-    
-    if (!user.wishlist.includes(productId)) {
-        user.wishlist.push(productId);
-        await user.save();
-    }
-    
-    // Remove from cart
-    req.session.cart.splice(itemIndex, 1);
-    
-    res.json({ 
-        success: true, 
-        message: 'Item moved to wishlist',
-        cartItems: req.session.cart.length
-    });
-}));
-
 // Save cart for later (for guest users)
-router.post('/save', asyncHandler(async (req, res) => {
+router.post('/save', optionalAuth, asyncHandler(async (req, res) => {
     const { email } = req.body;
     
     if (!req.session.cart || req.session.cart.length === 0) {
@@ -280,7 +331,7 @@ router.post('/save', asyncHandler(async (req, res) => {
 }));
 
 // Apply coupon code
-router.post('/apply-coupon', asyncHandler(async (req, res) => {
+router.post('/apply-coupon', optionalAuth, asyncHandler(async (req, res) => {
     const { code } = req.body;
     
     if (!req.session.cart || req.session.cart.length === 0) {
@@ -309,7 +360,7 @@ router.post('/apply-coupon', asyncHandler(async (req, res) => {
 }));
 
 // Remove coupon
-router.delete('/remove-coupon', asyncHandler(async (req, res) => {
+router.delete('/remove-coupon', optionalAuth, asyncHandler(async (req, res) => {
     delete req.session.coupon;
     res.json({ success: true, message: 'Coupon removed' });
 }));

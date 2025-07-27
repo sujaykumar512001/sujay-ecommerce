@@ -279,42 +279,35 @@
             const defaultOptions = {
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                    ...options.headers
+                },
+                credentials: 'include'
             };
 
             const finalOptions = { ...defaultOptions, ...options };
 
-            // Add authorization header if user is logged in
-            if (isLoggedIn) {
-                const token = localStorage.getItem(appConfig.storage.token);
-                if (token) {
-                    finalOptions.headers.Authorization = `Bearer ${token}`;
+            try {
+                const response = await fetch(url, finalOptions);
+                
+                // Handle session expiration
+                if (response.status === 401) {
+                    console.warn('[API] Session expired, redirecting to login');
+                    // Clear any stored auth data
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                    sessionStorage.removeItem('userData');
+                    sessionStorage.removeItem('authToken');
+                    
+                    // Redirect to login page
+                    window.location.href = '/clean/login';
+                    return;
                 }
+                
+                return response;
+            } catch (error) {
+                console.error('[API] Request failed:', error);
+                throw error;
             }
-
-            let lastError;
-            
-            for (let attempt = 1; attempt <= appConfig.retry.maxAttempts; attempt++) {
-                try {
-                    const response = await fetch(url, finalOptions);
-                    
-                    if (response.ok || !appConfig.features.retryOnError) {
-                        return response;
-                    }
-                    
-                    lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    
-                } catch (error) {
-                    lastError = error;
-                }
-
-                if (attempt < appConfig.retry.maxAttempts) {
-                    const delay = appConfig.retry.delay * Math.pow(appConfig.retry.backoff, attempt - 1);
-                    await utils.sleep(delay);
-                }
-            }
-
-            throw lastError;
         },
 
         /**
@@ -378,23 +371,73 @@
         /**
          * Logout user
          */
-        logout() {
-            localStorage.removeItem(appConfig.storage.token);
-            localStorage.removeItem(appConfig.storage.userData);
-            isLoggedIn = false;
-            currentUser = null;
-            cartCount = 0;
-            wishlistCount = 0;
+        async logout() {
+            try {
+                // Make API call to logout
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
 
-            // Update UI
-            const loginButtons = utils.safeQuerySelectorAll(`.${appConfig.classes.loginRequired}`);
-            const logoutButtons = utils.safeQuerySelectorAll(`.${appConfig.classes.logoutRequired}`);
+                // Clear local storage regardless of API response
+                localStorage.removeItem(appConfig.storage.token);
+                localStorage.removeItem(appConfig.storage.userData);
+                localStorage.removeItem('cart');
+                localStorage.removeItem('wishlist');
+                sessionStorage.removeItem('userData');
+                sessionStorage.removeItem('authToken');
+                
+                isLoggedIn = false;
+                currentUser = null;
+                cartCount = 0;
+                wishlistCount = 0;
 
-            loginButtons.forEach((btn) => (btn.style.display = "block"));
-            logoutButtons.forEach((btn) => (btn.style.display = "none"));
+                // Update UI
+                const loginButtons = utils.safeQuerySelectorAll(`.${appConfig.classes.loginRequired}`);
+                const logoutButtons = utils.safeQuerySelectorAll(`.${appConfig.classes.logoutRequired}`);
 
-            // Redirect to home page
-            window.location.href = "/";
+                loginButtons.forEach((btn) => (btn.style.display = "block"));
+                logoutButtons.forEach((btn) => (btn.style.display = "none"));
+
+                // Show success message if API call was successful
+                if (response.ok) {
+                    toastManager.show('Logged out successfully', 'success');
+                }
+
+                // Redirect to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Logout error:', error);
+                
+                // Even if API call fails, clear local data and redirect
+                localStorage.removeItem(appConfig.storage.token);
+                localStorage.removeItem(appConfig.storage.userData);
+                localStorage.removeItem('cart');
+                localStorage.removeItem('wishlist');
+                sessionStorage.removeItem('userData');
+                sessionStorage.removeItem('authToken');
+                
+                isLoggedIn = false;
+                currentUser = null;
+                cartCount = 0;
+                wishlistCount = 0;
+
+                // Update UI
+                const loginButtons = utils.safeQuerySelectorAll(`.${appConfig.classes.loginRequired}`);
+                const logoutButtons = utils.safeQuerySelectorAll(`.${appConfig.classes.logoutRequired}`);
+
+                loginButtons.forEach((btn) => (btn.style.display = "block"));
+                logoutButtons.forEach((btn) => (btn.style.display = "none"));
+
+                // Redirect to home page
+                window.location.href = "/";
+            }
         }
     };
 
@@ -518,11 +561,6 @@
          * Add item to cart
          */
         async addToCart(productId, quantity = 1, button = null) {
-            if (!isLoggedIn) {
-                toastManager.show(appConfig.messages.auth.loginRequired, "warning");
-                return;
-            }
-
             // Validate quantity
             if (quantity < appConfig.validation.minQuantity || quantity > appConfig.validation.maxQuantity) {
                 toastManager.show(`Quantity must be between ${appConfig.validation.minQuantity} and ${appConfig.validation.maxQuantity}`, "error");
@@ -569,8 +607,6 @@
          * Remove item from cart
          */
         async removeFromCart(productId) {
-            if (!isLoggedIn) return;
-
             try {
                 const response = await httpManager.post(appConfig.endpoints.cart.remove, { productId });
                 const data = await response.json();
@@ -598,7 +634,7 @@
          * Update cart quantity
          */
         async updateCartQuantity(productId, quantity) {
-            if (!isLoggedIn || quantity < appConfig.validation.minQuantity) return;
+            if (quantity < appConfig.validation.minQuantity) return;
 
             try {
                 const response = await httpManager.post(appConfig.endpoints.cart.update, { productId, quantity });
@@ -624,12 +660,6 @@
          * Update cart count
          */
         async updateCartCount() {
-            if (!isLoggedIn) {
-                cartCount = 0;
-                this.updateCartBadge();
-                return;
-            }
-
             try {
                 const response = await httpManager.get(appConfig.endpoints.cart.count);
                 const data = await response.json();
@@ -637,6 +667,9 @@
                 this.updateCartBadge();
             } catch (error) {
                 console.error('[App] Error fetching cart count:', error);
+                // Set cart count to 0 if there's an error
+                cartCount = 0;
+                this.updateCartBadge();
             }
         },
 
@@ -1310,11 +1343,186 @@
                 modalManager.initialize();
                 tooltipManager.initialize();
                 pageManager.initialize();
+                // Initialize service worker
+                // TEMPORARILY DISABLED - causing infinite requests
+                /*
                 serviceWorkerManager.initialize();
+                */
 
                 // Load cart and wishlist counts
                 cartManager.updateCartCount();
                 wishlistManager.updateWishlistCount();
+
+                // Session keep-alive to prevent automatic logout
+                const sessionKeepAlive = {
+                    interval: null,
+                    intervalTime: 5 * 60 * 1000, // 5 minutes
+                    
+                    start() {
+                        if (this.interval) {
+                            clearInterval(this.interval);
+                        }
+                        
+                        this.interval = setInterval(() => {
+                            this.refreshSession();
+                        }, this.intervalTime);
+                    },
+                    
+                    stop() {
+                        if (this.interval) {
+                            clearInterval(this.interval);
+                            this.interval = null;
+                        }
+                    },
+                    
+                    async refreshSession() {
+                        try {
+                            // Make a lightweight request to keep session alive
+                            const response = await fetch('/api/auth/session-check', {
+                                method: 'GET',
+                                credentials: 'include'
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.authenticated) {
+                                    console.log('[Session] Session refreshed successfully');
+                                } else {
+                                    console.warn('[Session] Session expired');
+                                    // Don't redirect automatically, let the user continue browsing
+                                }
+                            } else {
+                                console.warn('[Session] Session check failed');
+                            }
+                        } catch (error) {
+                            console.warn('[Session] Session check failed:', error);
+                        }
+                    }
+                };
+
+                // Start session keep-alive if user is logged in
+                // TEMPORARILY DISABLED - causing infinite requests
+                /*
+                if (isLoggedIn) {
+                    sessionKeepAlive.start();
+                }
+                */
+
+                // Session monitoring system to prevent automatic logout
+                // TEMPORARILY DISABLED - causing infinite requests
+                /*
+                const sessionMonitor = {
+                    interval: null,
+                    checkInterval: 2 * 60 * 1000, // Check every 2 minutes
+                    lastActivity: Date.now(),
+                    isActive: true,
+                    
+                    init() {
+                        this.startMonitoring();
+                        this.bindActivityEvents();
+                    },
+                    
+                    startMonitoring() {
+                        if (this.interval) {
+                            clearInterval(this.interval);
+                        }
+                        
+                        this.interval = setInterval(() => {
+                            this.checkSessionHealth();
+                        }, this.checkInterval);
+                    },
+                    
+                    stopMonitoring() {
+                        if (this.interval) {
+                            clearInterval(this.interval);
+                            this.interval = null;
+                        }
+                    },
+                    
+                    bindActivityEvents() {
+                        // Track user activity
+                        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+                        events.forEach(event => {
+                            document.addEventListener(event, () => {
+                                this.lastActivity = Date.now();
+                                this.isActive = true;
+                            }, { passive: true });
+                        });
+                        
+                        // Handle page visibility changes
+                        document.addEventListener('visibilitychange', () => {
+                            if (!document.hidden) {
+                                this.lastActivity = Date.now();
+                                this.isActive = true;
+                                this.checkSessionHealth(); // Check session when page becomes visible
+                            }
+                        });
+                    },
+                    
+                    async checkSessionHealth() {
+                        try {
+                            const response = await fetch('/api/auth/session-health', {
+                                method: 'GET',
+                                credentials: 'include'
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                
+                                if (data.success && data.session.hasUser) {
+                                    console.log('[SessionMonitor] Session is healthy');
+                                    this.isActive = true;
+                                } else {
+                                    console.warn('[SessionMonitor] Session health check failed');
+                                    this.handleSessionIssue();
+                                }
+                            } else {
+                                console.warn('[SessionMonitor] Session health check failed');
+                                this.handleSessionIssue();
+                            }
+                        } catch (error) {
+                            console.warn('[SessionMonitor] Session health check error:', error);
+                            this.handleSessionIssue();
+                        }
+                    },
+                    
+                    handleSessionIssue() {
+                        console.warn('[SessionMonitor] Session issue detected, attempting recovery...');
+                        this.attemptSessionRecovery();
+                    },
+                    
+                    async attemptSessionRecovery() {
+                        try {
+                            const response = await fetch('/api/auth/session-recover', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.success) {
+                                    console.log('[SessionMonitor] Session recovered successfully');
+                                    this.isActive = true;
+                                } else {
+                                    console.warn('[SessionMonitor] Session recovery failed');
+                                }
+                            } else {
+                                console.warn('[SessionMonitor] Session recovery failed');
+                            }
+                        } catch (error) {
+                            console.warn('[SessionMonitor] Session recovery error:', error);
+                        }
+                    }
+                };
+
+                // Initialize session monitoring
+                if (isLoggedIn) {
+                    sessionMonitor.init();
+                }
+                */
 
                 if (appConfig.features.debugMode) {
                     console.log('[App] E-Commerce App initialized successfully');
@@ -1330,8 +1538,47 @@
      * Initialize application when DOM is loaded
      */
     document.addEventListener("DOMContentLoaded", () => {
-        appManager.init();
+        // Check session persistence first
+        checkSessionPersistence().then(() => {
+            appManager.init();
+        });
     });
+
+    /**
+     * Check session persistence on page load
+     */
+    async function checkSessionPersistence() {
+        try {
+            const response = await fetch('/api/auth/session-health', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.success && data.session.hasUser) {
+                    console.log('[SessionPersistence] Session is valid on page load');
+                    
+                    // Update local storage with current user data
+                    if (data.session.user) {
+                        localStorage.setItem('userData', JSON.stringify(data.session.user));
+                        localStorage.setItem('authToken', 'session-active');
+                    }
+                } else {
+                    console.warn('[SessionPersistence] Session not found on page load');
+                    
+                    // Clear any stale data
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('authToken');
+                }
+            } else {
+                console.warn('[SessionPersistence] Session health check failed on page load');
+            }
+        } catch (error) {
+            console.error('[SessionPersistence] Session check error on page load:', error);
+        }
+    }
 
     /**
      * Global API
@@ -1361,5 +1608,91 @@
         formatDate: utils.formatDate,
         logout: authManager.logout.bind(authManager),
     };
+
+    // Global logout function for navbar compatibility
+    window.logout = function() {
+        // Use the enhanced logout handler if available
+        if (window.logoutHandler && typeof window.logoutHandler.handleLogout === 'function') {
+            window.logoutHandler.handleLogout();
+        } else {
+            // Fallback to the basic logout function
+            authManager.logout();
+        }
+    };
+
+    /**
+     * Session debugging tool
+     */
+    window.sessionDebug = {
+        getSessionInfo() {
+            return {
+                localStorage: {
+                    userData: localStorage.getItem('userData'),
+                    authToken: localStorage.getItem('authToken')
+                },
+                sessionStorage: {
+                    userData: sessionStorage.getItem('userData'),
+                    authToken: sessionStorage.getItem('authToken')
+                },
+                cookies: document.cookie,
+                timestamp: new Date().toISOString()
+            };
+        },
+        
+        async checkServerSession() {
+            try {
+                const response = await fetch('/api/auth/session-health', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                } else {
+                    return { error: 'Session health check failed' };
+                }
+            } catch (error) {
+                return { error: error.message };
+            }
+        },
+        
+        async forceSessionRefresh() {
+            try {
+                const response = await fetch('/api/auth/session-check', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Session refresh result:', data);
+                    return data;
+                } else {
+                    console.error('Session refresh failed');
+                    return { error: 'Session refresh failed' };
+                }
+            } catch (error) {
+                console.error('Session refresh error:', error);
+                return { error: error.message };
+            }
+        },
+        
+        logSessionStatus() {
+            const clientInfo = this.getSessionInfo();
+            console.log('=== SESSION DEBUG INFO ===');
+            console.log('Client Session Info:', clientInfo);
+            
+            this.checkServerSession().then(serverInfo => {
+                console.log('Server Session Info:', serverInfo);
+                console.log('=== END SESSION DEBUG ===');
+            });
+        }
+    };
+
+    // Add session debug to global scope
+    if (typeof window !== 'undefined') {
+        window.sessionDebug = window.sessionDebug;
+    }
 
 })(); 

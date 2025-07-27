@@ -3,20 +3,21 @@ const User = require("../models/User")
 const Order = require("../models/Order")
 const { protect } = require("../middleware/auth")
 const CONSTANTS = require("../config/constants")
+const disableLayout = require("../middleware/noLayout")
 const router = express.Router()
 
-// @desc    Show login page
+// @desc    Show login page - REDIRECT TO CLEAN VERSION
 // @route   GET /users/login
 // @access  Public
 router.get("/login", (req, res) => {
-  res.render("users/login", { title: "Login" })
+  res.redirect("/clean/login");
 })
 
-// @desc    Show register page
+// @desc    Show register page - REDIRECT TO CLEAN VERSION
 // @route   GET /users/register
 // @access  Public
 router.get("/register", (req, res) => {
-  res.render("users/register", { title: "Register" })
+  res.redirect("/clean/register");
 })
 
 // @desc    Show user profile
@@ -29,7 +30,7 @@ router.get("/profile", async (req, res) => {
       return res.redirect(`/users/login?returnUrl=${encodeURIComponent('/users/profile')}`)
     }
 
-    const userData = await User.findById(user._id).populate("wishlist")
+    const userData = await User.findById(user._id)
     const orders = await Order.find({ user: user._id })
       .sort({ createdAt: -1 })
       .limit(CONSTANTS.USER_RECENT_ORDERS_LIMIT)
@@ -177,88 +178,6 @@ router.get("/orders/:id", protect, async (req, res) => {
     console.error("Error loading order:", error)
     req.flash("error", CONSTANTS.ERROR_MESSAGES.ORDER_LOAD_ERROR)
     res.redirect("/users/orders")
-  }
-})
-
-// @desc    Show wishlist
-// @route   GET /users/wishlist
-// @access  Private
-router.get("/wishlist", protect, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).populate("wishlist")
-
-    res.render("users/wishlist", {
-      title: "My Wishlist",
-      wishlist: user.wishlist || [],
-    })
-  } catch (error) {
-    console.error("Error loading wishlist:", error)
-    req.flash("error", CONSTANTS.ERROR_MESSAGES.WISHLIST_LOAD_ERROR)
-    res.redirect("/users/profile")
-  }
-})
-
-// @desc    Add to wishlist
-// @route   POST /users/wishlist/:productId
-// @access  Private
-router.post("/wishlist/:productId", protect, async (req, res) => {
-  try {
-    const { productId } = req.params
-
-    // Validate ObjectId format
-    if (!productId || !/^[0-9a-fA-F]{24}$/.test(productId)) {
-      req.flash("error", CONSTANTS.ERROR_MESSAGES.INVALID_PRODUCT_ID)
-      return res.redirect("/listings")
-    }
-
-    const user = await User.findById(req.user._id)
-
-    // Check wishlist limit
-    if (user.wishlist.length >= CONSTANTS.USER_CONFIG.MAX_WISHLIST_ITEMS) {
-      req.flash("error", `Wishlist limit reached (${CONSTANTS.USER_CONFIG.MAX_WISHLIST_ITEMS} items)`)
-      return res.redirect(`/listings/${productId}`)
-    }
-
-    if (!user.wishlist.includes(productId)) {
-      user.wishlist.push(productId)
-      await user.save()
-      req.flash("success", CONSTANTS.SUCCESS_MESSAGES.PRODUCT_ADDED_TO_WISHLIST)
-    } else {
-      req.flash("info", CONSTANTS.INFO_MESSAGES.PRODUCT_ALREADY_IN_WISHLIST)
-    }
-
-    res.redirect(`/listings/${productId}`)
-  } catch (error) {
-    console.error("Error adding to wishlist:", error)
-    req.flash("error", CONSTANTS.ERROR_MESSAGES.WISHLIST_ADD_ERROR)
-    res.redirect("/listings")
-  }
-})
-
-// @desc    Remove from wishlist
-// @route   DELETE /users/wishlist/:productId
-// @access  Private
-router.delete("/wishlist/:productId", protect, async (req, res) => {
-  try {
-    const { productId } = req.params
-
-    // Validate ObjectId format
-    if (!productId || !/^[0-9a-fA-F]{24}$/.test(productId)) {
-      req.flash("error", CONSTANTS.ERROR_MESSAGES.INVALID_PRODUCT_ID)
-      return res.redirect("/users/wishlist")
-    }
-
-    const user = await User.findById(req.user._id)
-
-    user.wishlist = user.wishlist.filter((id) => id.toString() !== productId)
-    await user.save()
-
-    req.flash("success", CONSTANTS.SUCCESS_MESSAGES.PRODUCT_REMOVED_FROM_WISHLIST)
-    res.redirect("/users/wishlist")
-  } catch (error) {
-    console.error("Error removing from wishlist:", error)
-    req.flash("error", CONSTANTS.ERROR_MESSAGES.WISHLIST_REMOVE_ERROR)
-    res.redirect("/users/wishlist")
   }
 })
 

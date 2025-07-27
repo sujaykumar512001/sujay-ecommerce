@@ -2,48 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= typeof title !== 'undefined' ? title + ' - E-Commerce Store' : 'E-Commerce Store' %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title><%= typeof title !== 'undefined' ? title + ' - Yadav Collection' : 'Yadav Collection - Premium Fashion & Handmade Art' %></title>
     
-    <!-- Enhanced Meta tags for SEO -->
-    <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Discover amazing products at our E-Commerce Store. Shop the latest trends in electronics, fashion, home & garden with fast shipping and excellent customer service. Secure payments and 24/7 support.' %>">
-    <meta name="keywords" content="<%= typeof keywords !== 'undefined' ? keywords : 'ecommerce, online shopping, products, fashion, electronics, home decor, sports, books, deals, best prices, free shipping' %>">
-    <meta name="author" content="E-Commerce Store">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="English">
-    <meta name="revisit-after" content="7 days">
-    <meta name="distribution" content="global">
-    <meta name="rating" content="general">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Yadav Collection - Your premium destination for fashion and handmade art. Quality, style, and tradition combined.' %>">
+    <meta name="keywords" content="<%= typeof keywords !== 'undefined' ? keywords : 'fashion, handmade art, clothing, accessories, yadav collection, premium fashion' %>">
+    <meta name="author" content="Sujay Yadav">
+    <meta name="robots" content="<%= typeof robots !== 'undefined' ? robots : 'index, follow' %>">
     <meta name="theme-color" content="#667eea">
     <meta name="msapplication-TileColor" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="E-Store">
-    <meta name="application-name" content="E-Store">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- Enhanced Open Graph tags -->
-    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title + ' - E-Commerce Store' : 'E-Commerce Store - Your Online Shopping Destination' %>">
-    <meta property="og:description" content="<%= typeof description !== 'undefined' ? description : 'Discover amazing products at our E-Commerce Store. Shop the latest trends with fast shipping and excellent customer service.' %>">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="<%= typeof canonical !== 'undefined' ? canonical : 'https://yourdomain.com' %>">
-    <meta property="og:site_name" content="E-Commerce Store">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : '/images/og-image.jpg' %>">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="E-Commerce Store - Online Shopping">
-    
-    <!-- Twitter Card tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title + ' - E-Commerce Store' : 'E-Commerce Store' %>">
-    <meta name="twitter:description" content="<%= typeof description !== 'undefined' ? description : 'Discover amazing products at our E-Commerce Store.' %>">
-    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : '/images/twitter-image.jpg' %>">
-    <meta name="twitter:site" content="@estore">
-    <meta name="twitter:creator" content="@estore">
+    <meta name="apple-mobile-web-app-title" content="Yadav Collection">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="<%= typeof canonical !== 'undefined' ? canonical : 'https://yourdomain.com' + req.url %>">
+    <% if (typeof canonical !== 'undefined') { %>
+        <link rel="canonical" href="<%= canonical %>">
+    <% } %>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="<%= typeof title !== 'undefined' ? title + ' - Yadav Collection' : 'Yadav Collection' %>">
+    <meta property="og:description" content="<%= typeof description !== 'undefined' ? description : 'Your premium destination for fashion and handmade art' %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= typeof canonical !== 'undefined' ? canonical : 'https://yadavcollection.com' %>">
+    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : '/images/yadav-collection-og.jpg' %>">
+    <meta property="og:site_name" content="Yadav Collection">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title + ' - Yadav Collection' : 'Yadav Collection' %>">
+    <meta name="twitter:description" content="<%= typeof description !== 'undefined' ? description : 'Your premium destination for fashion and handmade art' %>">
+    <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : '/images/yadav-collection-og.jpg' %>">
+    <meta name="twitter:site" content="@yadavcollection">
+    <meta name="twitter:creator" content="@yadavcollection">
+    
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-192.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Yadav Collection",
+      "url": "https://yadavcollection.com",
+      "description": "Your premium destination for fashion and handmade art",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://yadavcollection.com/client/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "sameAs": [
+        "https://facebook.com/yadavcollection",
+        "https://instagram.com/yadavcollection",
+        "https://twitter.com/yadavcollection"
+      ]
+    }
+    </script>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -52,30 +79,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS with multiple fallback options -->
-    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>&r=<%= Math.random().toString(36).substring(7) %>" onerror="console.error('CSS failed to load from /css/')" onload="console.log('CSS loaded successfully from /css/')">
-    <link rel="stylesheet" href="/CSS/style.css?v=<%= Date.now() %>&r=<%= Math.random().toString(36).substring(7) %>" onerror="console.error('CSS failed to load from /CSS/')" onload="console.log('CSS loaded successfully from /CSS/')">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/mobile-nav.css">
     
-    <!-- Force CSS reload after page load -->
-    <script>
-        // Force CSS reload immediately
-        setTimeout(() => {
-            const links = document.querySelectorAll('link[rel="stylesheet"]');
-            links.forEach(link => {
-                if (link.href.includes('style.css')) {
-                    const newHref = link.href.split('?')[0] + '?v=' + Date.now() + '&r=' + Math.random().toString(36).substring(7);
-                    link.href = newHref;
-                    console.log('Forced CSS reload:', newHref);
-                }
-            });
-        }, 100);
-    </script>
-    
-    <!-- Fallback CSS if main CSS fails -->
+    <!-- Critical CSS for immediate rendering -->
     <style>
-        /* Basic fallback styles */
+        /* Critical CSS to ensure page displays properly */
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -87,268 +99,7 @@
         
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .navbar-brand {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white !important;
-            text-decoration: none;
-        }
-        
-        .navbar-nav .nav-link {
-            color: rgba(255,255,255,0.9) !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 6rem 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-        }
-        
-        .hero-title {
-            font-size: 4rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .hero-subtitle {
-            font-size: 1.4rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.9;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24) !important;
-            border: none !important;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .btn-outline-light {
-            border: 2px solid white;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        
-        .features-section {
-            padding: 5rem 0;
-            background: white;
-        }
-        
-        .feature-card {
-            text-align: center;
-            padding: 2rem;
-            border-radius: 15px;
-            background: white;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            color: #667eea;
-            margin-bottom: 1.5rem;
-        }
-        
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        
-        .feature-text {
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        .products-section {
-            padding: 5rem 0;
-            background: #f8f9fa;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 3rem;
-        }
-        
-        .categories-section {
-            padding: 5rem 0;
-            background: white;
-        }
-        
-        .category-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-        }
-        
-        .category-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            color: white;
-            text-decoration: none;
-        }
-        
-        .category-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        
-        .category-description {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        .newsletter-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4rem 0;
-            text-align: center;
-        }
-        
-        .newsletter-title {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-        
-        .newsletter-subtitle {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        .newsletter-form {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .newsletter-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-        }
-        
-        .newsletter-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 3rem 0 1rem;
-        }
-        
-        .footer-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .footer-links {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .footer-links li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .footer-links a {
-            color: #bdc3c7;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-        }
-        
-        .footer-bottom {
-            border-top: 1px solid #34495e;
-            padding-top: 2rem;
-            text-align: center;
-            color: #bdc3c7;
-        }
-    </style>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
-    <!-- Inline Critical CSS -->
-    <style>
-        /* Critical styles to ensure immediate loading */
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--gray-800);
-            background-color: var(--light-color);
-        }
-        
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             padding: 1rem 0;
             position: sticky;
             top: 0;
@@ -357,513 +108,485 @@
         }
         
         .navbar-brand {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--white-color) !important;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white !important;
             text-decoration: none;
-            transition: var(--transition);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .navbar-nav .nav-link {
-            color: rgba(255,255,255,0.9) !important;
+        .navbar-brand .subtitle {
+            font-size: 0.8rem;
+            font-weight: 400;
+            opacity: 0.9;
+            display: block;
+            margin-top: -5px;
+        }
+        
+        .nav-link {
+            color: white !important;
             font-weight: 500;
-            margin: 0 0.5rem;
-            transition: var(--transition);
-            position: relative;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0 0.25rem;
         }
         
-        .navbar-nav .nav-link:hover {
-            color: var(--white-color) !important;
-            transform: translateY(-2px);
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
         }
         
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Home Page Specific Styles */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: var(--white-color);
-            padding: 6rem 0;
-            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0;
             position: relative;
             overflow: hidden;
-            min-height: 80vh;
-            display: flex;
-                align-items: center;
-            }
-            
+        }
+        
         .hero-title {
-            font-size: 4rem;
-            font-weight: bold;
+            font-size: 3.5rem;
+            font-weight: 800;
             margin-bottom: 1.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: fadeInUp 1s ease-out;
         }
         
         .hero-subtitle {
-            font-size: 1.4rem;
-            margin-bottom: 2.5rem;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
             opacity: 0.9;
-            animation: fadeInUp 1s ease-out 0.2s both;
         }
         
-        .btn-primary {
-            background: linear-gradient(45deg, var(--accent-color), #ee5a24) !important;
-            border: none !important;
+        .hero-buttons .btn {
             padding: 12px 30px;
-            border-radius: var(--border-radius-xl);
+            border-radius: 25px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        .hero-buttons .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
         
-        .btn-outline-light {
-            border: 2px solid var(--white-color);
-            color: var(--white-color);
-            padding: 12px 30px;
-            border-radius: var(--border-radius-xl);
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-title {
+            font-size: 1.1rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: var(--transition);
-            background: transparent;
+            margin-bottom: 0.5rem;
+            min-height: 3.4rem;
+            max-height: 3.4rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
         
-        .btn-outline-light:hover {
-            background: var(--white-color);
-            color: var(--primary-color);
-            transform: translateY(-3px);
+        .product-price {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .current-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+        
+        .discount-savings {
+            color: #28a745;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            display: inline-block;
+            width: fit-content;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .category-icon {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .offer-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .offer-content {
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .offer-image {
+            flex: 1;
+        }
+        
+        .offer-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .offer-card {
+                flex-direction: column;
+            }
+            
+            .offer-content {
+                order: 2;
+            }
+            
+            .offer-image {
+                order: 1;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Development CSS Reload Button (only shows in development) -->
-    <% if (process.env.NODE_ENV !== 'production') { %>
-    <style>
-        .css-reload-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 9999;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .css-reload-btn:hover {
-            background: #ff5252;
-        }
-    </style>
-    <button class="css-reload-btn" onclick="forceCSSReload()" title="Reload CSS (Ctrl+Shift+R)">
-        🔄 CSS
-    </button>
-    <% } %>
-    
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
+    <!-- Navigation - Only show if not admin page -->
+    <% if (typeof isAdminPage === 'undefined' || isAdminPage === false) { %>
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-shopping-bag me-2"></i>
-                E-Store
+                Yadav Collection
+                <span class="subtitle">Premium Fashion & Art</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/client/shop"><i class="fas fa-store me-1"></i>Shop</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-th-large me-1"></i>Categories
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Shop
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/client/category/electronics">Electronics</a></li>
-                            <li><a class="dropdown-item" href="/client/category/clothing">Clothing</a></li>
-                            <li><a class="dropdown-item" href="/client/category/home">Home & Garden</a></li>
-                            <li><a class="dropdown-item" href="/client/category/sports">Sports</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/client/shop">View All</a></li>
+                            <li><a class="dropdown-item" href="/client/shop">All Products</a></li>
+                            <li><a class="dropdown-item" href="/client/category/women">Women</a></li>
+                            <li><a class="dropdown-item" href="/client/category/men">Men</a></li>
+                            <li><a class="dropdown-item" href="/client/category/kids">Kids</a></li>
+                            <li><a class="dropdown-item" href="/client/category/paintings">Paintings</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/client/deals"><i class="fas fa-tags me-1"></i>Deals</a>
+                        <a class="nav-link" href="/client/new-arrivals">New Arrivals</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/about"><i class="fas fa-info-circle me-1"></i>About</a>
+                        <a class="nav-link" href="/client/best-sellers">Best Sellers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/client/deals">Deals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
                     </li>
                 </ul>
                 
                 <!-- Search Bar -->
-                <form class="d-flex me-3" action="/client/search" method="GET">
-                    <div class="search-container">
-                        <input class="form-control search-input" type="search" name="q" placeholder="Search products..." 
-                               value="<%= typeof currentSearch !== 'undefined' ? currentSearch : '' %>">
-                        <button class="btn search-btn" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
+                <form class="d-flex me-3" role="search" action="/client/search" method="GET">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search products..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </form>
                 
                 <!-- User Menu -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/client/wishlist" title="Wishlist">
-                            <i class="fas fa-heart"></i>
-                            <span class="badge bg-danger wishlist-count">0</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/cart" title="Cart">
+                        <a class="nav-link" href="/client/cart" title="Cart">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge bg-primary cart-count">0</span>
+                            <span class="badge bg-danger">0</span>
                         </a>
                     </li>
                     
-                    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
-                        <li class="nav-item dropdown user-menu">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-1"></i>
-                                <%= currentUser.firstName || currentUser.username %>
+                    <!-- Debug user data -->
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <!-- User is logged in -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i> <%= user.firstName || user.name || 'User' %>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="/profile">
-                                    <i class="fas fa-user me-2"></i>My Profile
-                                </a></li>
-                                <li><a class="dropdown-item" href="/orders/my-orders">
-                                    <i class="fas fa-box me-2"></i>My Orders
-                                </a></li>
-                                <li><a class="dropdown-item" href="/client/wishlist">
-                                    <i class="fas fa-heart me-2"></i>Wishlist
-                                </a></li>
-                                <% if (currentUser.role === 'admin') { %>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/admin/dashboard">
-                                        <i class="fas fa-cog me-2"></i>Admin Panel
-                                    </a></li>
-                                <% } %>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/users/profile">Profile</a></li>
+                                <li><a class="dropdown-item" href="/users/orders">Orders</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                </a></li>
+                                <li><a class="dropdown-item logout-btn" href="/api/auth/web/logout" data-action="logout">Logout</a></li>
                             </ul>
                         </li>
                     <% } else { %>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                        <!-- User is not logged in -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i> Account
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/register">
-                                <i class="fas fa-user-plus me-1"></i>Register
-                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/users/login">Login</a></li>
+                                <li><a class="dropdown-item" href="/users/register">Register</a></li>
+                            </ul>
                         </li>
                     <% } %>
+                    
                 </ul>
             </div>
         </div>
     </nav>
-    
+    <% } %>
+
     <!-- Flash Messages -->
     <% if (typeof success !== 'undefined' && success.length > 0) { %>
-        <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <%= success %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="container mt-3">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
     <% } %>
-    
-    <% if (typeof error !== 'undefined' && error.length > 0) { %>
-        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <%= error %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+        <div class="container mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
     <% } %>
-    
+
     <!-- Main Content -->
     <main>
         <%- body %>
     </main>
-    
-    <!-- Footer -->
-    <footer class="footer">
+
+    <!-- Footer - Only show if not admin page -->
+    <% if (typeof isAdminPage === 'undefined' || isAdminPage === false) { %>
+    <%- include('./partials/footer') %>
+    <% } %>
+
+    <!-- Mobile Navigation - Only show if not admin page -->
+    <% if (typeof isAdminPage === 'undefined' || isAdminPage === false) { %>
+    <div class="mobile-nav-container">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 col-md-6 footer-section">
-                    <h5 class="footer-title">About Us</h5>
-                    <p class="text-muted">Your trusted online shopping destination for quality products and excellent service.</p>
-                    <div class="social-links">
-                        <a href="#" class="text-muted me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-muted me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-muted me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-muted"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
+                <div class="col-3">
+                    <a href="/" class="mobile-nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
                 </div>
-                
-                <div class="col-lg-3 col-md-6 footer-section">
-                    <h5 class="footer-title">Quick Links</h5>
-                    <ul class="footer-links">
-                        <li><a href="/client/shop">Shop</a></li>
-                        <li><a href="/client/deals">Deals</a></li>
-                        <li><a href="/client/new-arrivals">New Arrivals</a></li>
-                        <li><a href="/client/best-sellers">Best Sellers</a></li>
-                        <li><a href="/about">About Us</a></li>
-                    </ul>
+                <div class="col-3">
+                    <a href="/client/shop" class="mobile-nav-item">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Shop</span>
+                    </a>
                 </div>
-                
-                <div class="col-lg-3 col-md-6 footer-section">
-                    <h5 class="footer-title">Customer Service</h5>
-                    <ul class="footer-links">
-
-                        <li><a href="/shipping">Shipping Info</a></li>
-                        <li><a href="/returns">Returns & Exchanges</a></li>
-                        <li><a href="/faq">FAQ</a></li>
-                        <li><a href="/support">Support</a></li>
-                    </ul>
+                <div class="col-3">
+                    <a href="/client/cart" class="mobile-nav-item">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Cart</span>
+                        <span class="mobile-nav-badge cart-count">0</span>
+                    </a>
                 </div>
-                
-                <div class="col-lg-3 col-md-6 footer-section">
-                    <h5 class="footer-title">Newsletter</h5>
-                    <p class="text-muted">Subscribe to get special offers and updates.</p>
-                    <form class="newsletter-form">
-                        <input type="email" id="layout-newsletter-email" name="email" class="form-control mb-2" placeholder="Enter your email">
-                        <button type="submit" class="btn btn-primary w-100">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <p>&copy; 2024 E-Commerce Store. All rights reserved.</p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="payment-methods">
-                            <span class="payment-method">Visa</span>
-                            <span class="payment-method">Mastercard</span>
-                            <span class="payment-method">PayPal</span>
-                            <span class="payment-method">Stripe</span>
-                        </div>
-                    </div>
+                <div class="col-3">
+                    <a href="/client/wishlist" class="mobile-nav-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Wishlist</span>
+                        <span class="mobile-nav-badge wishlist-count">0</span>
+                    </a>
                 </div>
             </div>
         </div>
-    </footer>
-    
+    </div>
+
+    <!-- Mobile Search Overlay -->
+    <div class="mobile-search-overlay" id="mobileSearchOverlay">
+        <div class="mobile-search-container">
+            <div class="mobile-search-header">
+                <h5>Search Products</h5>
+                <button class="mobile-search-close" onclick="closeMobileSearch()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form action="/client/search" method="GET">
+                <input type="search" name="q" class="mobile-search-input" placeholder="Search products..." autocomplete="off">
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Cart Sidebar -->
+    <div class="mobile-cart-sidebar" id="mobileCartSidebar">
+        <div class="mobile-cart-header">
+            <h5>Shopping Cart</h5>
+            <button class="mobile-cart-close" onclick="closeMobileCart()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-cart-content" id="mobileCartContent">
+            <!-- Cart items will be loaded here -->
+        </div>
+        <div class="mobile-cart-footer">
+            <div class="d-flex justify-content-between mb-2">
+                <span>Total:</span>
+                <span class="fw-bold cart-total">₹0</span>
+            </div>
+            <a href="/client/cart" class="btn btn-primary w-100">View Cart</a>
+        </div>
+    </div>
+    <% } %>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Custom JavaScript -->
-    <script src="/js/script.js?v=<%= Date.now() %>"></script>
-    <!-- Cart functionality is now included in script.js -->
-    <script src="/js/auth-manager.js?v=<%= Date.now() %>"></script>
-    <script src="/js/auth-navigation.js?v=<%= Date.now() %>"></script>
-    <script src="/js/logout-handler.js?v=<%= Date.now() %>"></script>
-    <script src="/js/socket-client.js?v=<%= Date.now() %>"></script>
-    
-    <script>
-        // Force CSS reload function
-        function forceCSSReload() {
-            console.log('Forcing CSS reload...');
-            const links = document.querySelectorAll('link[rel="stylesheet"]');
-            links.forEach(link => {
-                if (link.href.includes('/CSS/style.css')) {
-                    const newHref = link.href.split('?')[0] + '?v=' + Date.now() + '&r=' + Math.random().toString(36).substring(7);
-                    link.href = newHref;
-                    console.log('CSS href updated to:', newHref);
-                }
-            });
-        }
-        
-        // Check if CSS loaded properly and force reload if needed
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if CSS variables are loaded (indicates main CSS loaded)
-            const computedStyle = getComputedStyle(document.documentElement);
-            const primaryColor = computedStyle.getPropertyValue('--primary-color');
-            
-            console.log('CSS check - primary color:', primaryColor);
-            
-            if (!primaryColor || primaryColor.trim() === '') {
-                console.log('CSS variables not loaded, forcing reload...');
-                setTimeout(() => {
-                    forceCSSReload();
-                }, 100);
-            } else {
-                console.log('CSS loaded successfully with variables');
-            }
-        });
-        
-        // Force reload on page load if needed (for development)
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            // Add a small delay to ensure CSS is loaded
-            setTimeout(() => {
-                // Check if CSS variables are loaded
-                const computedStyle = getComputedStyle(document.documentElement);
-                const primaryColor = computedStyle.getPropertyValue('--primary-color');
-                
-                if (!primaryColor || primaryColor.trim() === '') {
-                    console.log('CSS variables not loaded, forcing reload...');
-                    forceCSSReload();
-                }
-            }, 100);
-        }
-        
-        // Add keyboard shortcut for manual CSS reload (Ctrl+Shift+R)
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
-                e.preventDefault();
-                console.log('Manual CSS reload triggered');
-                forceCSSReload();
-            }
-        });
-        
-        // Update cart and wishlist counts
-        function updateCounts() {
-            fetch('/cart/summary')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const cartCountElement = document.querySelector('.cart-count');
-                        if (cartCountElement) {
-                            cartCountElement.textContent = data.itemCount;
-                        }
-                    }
-                })
-                .catch(error => console.error('Error updating cart count:', error));
-        }
-        
-        // Update counts on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCounts();
-            
-            // Auto-hide alerts after 5 seconds
-            setTimeout(() => {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
-        });
-        
-        // Newsletter form submission
-        document.querySelector('.newsletter-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = this.querySelector('input[type="email"]').value;
-            if (email) {
-                // Here you would typically send the email to your backend
-                alert('Thank you for subscribing to our newsletter!');
-                this.reset();
-            }
-        });
-    </script>
-    
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "E-Commerce Store",
-      "alternateName": "E-Store",
-      "url": "https://yourdomain.com",
-      "logo": "https://yourdomain.com/images/logo.png",
-      "description": "Your trusted online shopping destination for quality products and excellent service",
-      "foundingDate": "2024",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+1-555-123-4567",
-        "contactType": "customer service",
-        "availableLanguage": "English"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "US",
-        "addressLocality": "Your City",
-        "addressRegion": "Your State"
-      },
-      "sameAs": [
-        "https://facebook.com/estore",
-        "https://twitter.com/estore",
-        "https://instagram.com/estore",
-        "https://linkedin.com/company/estore"
-      ],
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://yourdomain.com/client/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "E-Commerce Store",
-      "url": "https://yourdomain.com",
-      "description": "Your trusted online shopping destination for quality products and excellent service",
-      "publisher": {
-        "@type": "Organization",
-        "name": "E-Commerce Store"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://yourdomain.com/client/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://yourdomain.com"
-        }
-        <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs.length > 0) { %>
-          <% breadcrumbs.forEach((crumb, index) => { %>
-          ,{
-            "@type": "ListItem",
-            "position": <%= index + 2 %>,
-            "name": "<%= crumb.name %>",
-            "item": "https://yourdomain.com<%= crumb.url %>"
-          }
-          <% }); %>
-        <% } %>
-      ]
-    }
-    </script>
+    <!-- Custom JavaScript - Only load if not admin page -->
+    <% if (typeof isAdminPage === 'undefined' || isAdminPage === false) { %>
+    <script src="/js/script.js"></script>
+    <script src="/js/auth-navigation.js"></script>
+    <script src="/js/simple-navigation.js"></script>
+    <script src="/js/auth-manager.js"></script>
+    <script src="/js/socket-client.js"></script>
+    <script src="/js/logout-handler.js"></script>
+    <script src="/js/lazy-loading.js"></script>
+    <script src="/js/mobile-enhancements.js"></script>
+    <script src="/js/image-optimization.js"></script>
+    <% } %>
 </body>
 </html>

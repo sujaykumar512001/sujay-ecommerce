@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<!-- Admin Analytics Dashboard -->
+<div class="analytics-dashboard">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="page-title">
+                        <i class="fas fa-chart-line me-3"></i>Analytics Dashboard
+                    </h1>
+                    <p class="page-subtitle">Comprehensive insights into your e-commerce performance</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="date-range">
+                        <select id="dateRange" class="form-select">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30" selected>Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                            <option value="365">Last Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <section class="key-metrics">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-clipboard-list text-primary"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number" id="totalOrders">0</h3>
+                            <p class="metric-label">Total Orders</p>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="orderChange">+12.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-rupee-sign text-success"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number" id="totalRevenue">₹0</h3>
+                            <p class="metric-label">Total Revenue</p>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="revenueChange">+8.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-users text-warning"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number" id="totalCustomers">0</h3>
+                            <p class="metric-label">Total Customers</p>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="customerChange">+15.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-eye text-info"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-number" id="totalViews">0</h3>
+                            <p class="metric-label">Total Views</p>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="viewChange">+22.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Revenue Chart -->
+                <div class="col-lg-8 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-chart-area me-2"></i>Revenue Trend
+                            </h5>
+                            <div class="chart-actions">
+                                <button class="btn btn-sm btn-outline-secondary" id="revenueChartBtn">View Chart</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="revenueChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Distribution -->
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-chart-pie me-2"></i>Category Distribution
+                            </h5>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="categoryChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Top Products -->
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-star me-2"></i>Top Performing Products
+                            </h5>
+                        </div>
+                        <div class="chart-body">
+                            <div id="topProductsList">
+                                <!-- Top products will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-clock me-2"></i>Recent Activity
+                            </h5>
+                        </div>
+                        <div class="chart-body">
+                            <div id="recentActivityList">
+                                <!-- Recent activity will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Analytics -->
+    <section class="detailed-analytics">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sales by Category -->
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-chart-bar me-2"></i>Sales by Category
+                            </h5>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="salesByCategoryChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Demographics -->
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-users me-2"></i>Customer Demographics
+                            </h5>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="demographicsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Analytics Dashboard CSS -->
+<style>
+    .analytics-dashboard {
+        background: #f8f9fa;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        background: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: #666;
+        margin: 0;
+    }
+
+    .date-range .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        max-width: 200px;
+    }
+
+    .key-metrics {
+        margin-bottom: 2rem;
+    }
+
+    .metric-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .metric-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .metric-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .metric-label {
+        color: #666;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .metric-change {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .metric-change.positive {
+        color: #28a745;
+    }
+
+    .metric-change.negative {
+        color: #dc3545;
+    }
+
+    .charts-section {
+        margin-bottom: 2rem;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+        height: 100%;
+    }
+
+    .chart-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .chart-title {
+        color: #333;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .chart-actions .btn {
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .chart-body {
+        padding: 1.5rem;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .detailed-analytics {
+        margin-bottom: 2rem;
+    }
+
+    /* Top Products List */
+    .top-product-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .top-product-item:last-child {
+        border-bottom: none;
+    }
+
+    .product-rank {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-right: 1rem;
+    }
+
+    .product-info {
+        flex: 1;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-stats {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .product-sales {
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    /* Recent Activity List */
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .activity-icon.order {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+
+    .activity-icon.sale {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+
+    .activity-icon.user {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-text {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .analytics-dashboard {
+            padding: 1rem 0;
+        }
+
+        .page-header {
+            padding: 1.5rem 0;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+        }
+
+        .metric-number {
+            font-size: 2rem;
+        }
+
+        .chart-header {
+            padding: 1rem;
+        }
+
+        .chart-body {
+            padding: 1rem;
+            min-height: 250px;
+        }
+    }
+</style>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Analytics Dashboard JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    let revenueChart, categoryChart, salesByCategoryChart, demographicsChart;
+
+    // Load analytics data
+    loadAnalytics();
+
+    // Date range change handler
+    document.getElementById('dateRange').addEventListener('change', function() {
+        loadAnalytics();
+    });
+
+    function loadAnalytics() {
+        const dateRange = document.getElementById('dateRange').value;
+        
+        // Load key metrics
+        loadKeyMetrics(dateRange);
+        
+        // Load charts
+        loadRevenueChart(dateRange);
+        loadCategoryChart();
+        loadSalesByCategoryChart();
+        loadDemographicsChart();
+        
+        // Load lists
+        loadTopProducts();
+        loadRecentActivity();
+    }
+
+    function loadKeyMetrics(dateRange) {
+        // Simulate API call for key metrics
+        const metrics = {
+            totalOrders: 1247,
+            totalRevenue: 284750,
+            totalCustomers: 892,
+            totalViews: 15678,
+            orderChange: '+12.5%',
+            revenueChange: '+8.3%',
+            customerChange: '+15.2%',
+            viewChange: '+22.1%'
+        };
+
+        // Update DOM
+        document.getElementById('totalOrders').textContent = metrics.totalOrders.toLocaleString();
+        document.getElementById('totalRevenue').textContent = '₹' + metrics.totalRevenue.toLocaleString();
+        document.getElementById('totalCustomers').textContent = metrics.totalCustomers.toLocaleString();
+        document.getElementById('totalViews').textContent = metrics.totalViews.toLocaleString();
+        
+        document.getElementById('orderChange').textContent = metrics.orderChange;
+        document.getElementById('revenueChange').textContent = metrics.revenueChange;
+        document.getElementById('customerChange').textContent = metrics.customerChange;
+        document.getElementById('viewChange').textContent = metrics.viewChange;
+    }
+
+    function loadRevenueChart(dateRange) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        // Sample data
+        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        const data = [45000, 52000, 48000, 61000, 55000, 68000];
+
+        if (revenueChart) {
+            revenueChart.destroy();
+        }
+
+        revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: data,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function loadCategoryChart() {
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        
+        // Sample data
+        const data = {
+            labels: ['Men', 'Women', 'Kids', 'Paintings'],
+            datasets: [{
+                data: [35, 40, 15, 10],
+                backgroundColor: [
+                    '#667eea',
+                    '#764ba2',
+                    '#f093fb',
+                    '#f5576c'
+                ],
+                borderWidth: 0
+            }]
+        };
+
+        if (categoryChart) {
+            categoryChart.destroy();
+        }
+
+        categoryChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    function loadSalesByCategoryChart() {
+        const ctx = document.getElementById('salesByCategoryChart').getContext('2d');
+        
+        // Sample data
+        const data = {
+            labels: ['Men', 'Women', 'Kids', 'Paintings'],
+            datasets: [{
+                label: 'Sales',
+                data: [120, 150, 60, 40],
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.8)',
+                    'rgba(118, 75, 162, 0.8)',
+                    'rgba(240, 147, 251, 0.8)',
+                    'rgba(245, 87, 108, 0.8)'
+                ],
+                borderWidth: 0
+            }]
+        };
+
+        if (salesByCategoryChart) {
+            salesByCategoryChart.destroy();
+        }
+
+        salesByCategoryChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function loadDemographicsChart() {
+        const ctx = document.getElementById('demographicsChart').getContext('2d');
+        
+        // Sample data
+        const data = {
+            labels: ['18-25', '26-35', '36-45', '46+'],
+            datasets: [{
+                label: 'Customers',
+                data: [30, 45, 20, 5],
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.8)',
+                    'rgba(118, 75, 162, 0.8)',
+                    'rgba(240, 147, 251, 0.8)',
+                    'rgba(245, 87, 108, 0.8)'
+                ],
+                borderWidth: 0
+            }]
+        };
+
+        if (demographicsChart) {
+            demographicsChart.destroy();
+        }
+
+        demographicsChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function loadTopProducts() {
+        const topProducts = [
+            { name: 'Elegant Women\'s Dress', sales: 45, revenue: 58455 },
+            { name: 'Men\'s Casual Shirt', sales: 38, revenue: 34162 },
+            { name: 'Abstract Art Painting', sales: 32, revenue: 79968 },
+            { name: 'Women\'s Handbag', sales: 28, revenue: 53172 },
+            { name: 'Kids Summer Dress', sales: 25, revenue: 14975 }
+        ];
+
+        const container = document.getElementById('topProductsList');
+        container.innerHTML = topProducts.map((product, index) => `
+            <div class="top-product-item">
+                <div class="product-rank">${index + 1}</div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-stats">
+                        ${product.sales} sales • <span class="product-sales">₹${product.revenue.toLocaleString()}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadRecentActivity() {
+        const activities = [
+            { type: 'order', text: 'New order #1234 received', time: '2 minutes ago' },
+            { type: 'sale', text: 'Product "Men\'s Casual Shirt" sold', time: '5 minutes ago' },
+            { type: 'user', text: 'New customer registered', time: '10 minutes ago' },
+            { type: 'order', text: 'Order #1233 completed', time: '15 minutes ago' },
+            { type: 'sale', text: 'Product "Women\'s Dress" sold', time: '20 minutes ago' }
+        ];
+
+        const container = document.getElementById('recentActivityList');
+        container.innerHTML = activities.map(activity => `
+            <div class="activity-item">
+                <div class="activity-icon ${activity.type}">
+                    <i class="fas fa-${activity.type === 'order' ? 'shopping-cart' : activity.type === 'sale' ? 'rupee-sign' : 'user'}"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">${activity.text}</div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Real-time updates (simulated)
+    setInterval(() => {
+        // Update metrics with small random changes
+        const currentOrders = parseInt(document.getElementById('totalOrders').textContent.replace(/,/g, ''));
+        const newOrders = currentOrders + Math.floor(Math.random() * 3);
+        document.getElementById('totalOrders').textContent = newOrders.toLocaleString();
+    }, 30000); // Update every 30 seconds
+
+    console.log('Analytics dashboard loaded successfully!');
+});
+</script> 

@@ -1,0 +1,277 @@
+<!-- Admin Users Management -->
+<div class="admin-users">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/products">
+                                <i class="fas fa-box me-2"></i>
+                                Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/orders">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/users">
+                                <i class="fas fa-users me-2"></i>
+                                User Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/analytics">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Analytics
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">User Management</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">All Users</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="usersTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-users {
+    background-color: #f8f9fc;
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.role-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.role-admin {
+    background-color: #dc3545;
+    color: white;
+}
+
+.role-user {
+    background-color: #6c757d;
+    color: white;
+}
+
+.role-moderator {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        padding-top: 0;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+});
+
+async function loadUsers() {
+    try {
+        // For now, we'll show a placeholder since the users API might not be implemented yet
+        const tableBody = document.getElementById('usersTableBody');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h5>No Users Found</h5>
+                    <p>Users will appear here once they register on the platform.</p>
+                </td>
+            </tr>
+        `;
+        
+        // TODO: Implement actual users API call
+        // const response = await fetch('/admin/api/users');
+        // if (response.ok) {
+        //     const data = await response.json();
+        //     if (data.success) {
+        //         displayUsers(data.users);
+        //     }
+        // }
+    } catch (error) {
+        console.error('Error loading users:', error);
+        const tableBody = document.getElementById('usersTableBody');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-danger">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <p>Error loading users. Please try again.</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function displayUsers(users) {
+    const tableBody = document.getElementById('usersTableBody');
+    
+    if (!users || users.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h5>No Users Found</h5>
+                    <p>Users will appear here once they register on the platform.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const usersHtml = users.map(user => `
+        <tr>
+            <td>#${user._id}</td>
+            <td>${user.firstName} ${user.lastName}</td>
+            <td>${user.email}</td>
+            <td><span class="role-badge role-${user.role || 'user'}">${user.role || 'user'}</span></td>
+            <td><span class="status-badge status-${user.status || 'active'}">${user.status || 'active'}</span></td>
+            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="viewUser('${user._id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-warning" onclick="editUser('${user._id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user._id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+    
+    tableBody.innerHTML = usersHtml;
+}
+
+function viewUser(userId) {
+    // TODO: Implement user detail view
+    alert(`View user ${userId} - Feature coming soon!`);
+}
+
+function editUser(userId) {
+    // TODO: Implement user edit
+    alert(`Edit user ${userId} - Feature coming soon!`);
+}
+
+function deleteUser(userId) {
+    // TODO: Implement user deletion
+    if (confirm('Are you sure you want to delete this user?')) {
+        alert(`Delete user ${userId} - Feature coming soon!`);
+    }
+}
+</script>
+
+ 

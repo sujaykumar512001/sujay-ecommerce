@@ -1,224 +1,224 @@
-<%- include('../partials/header') %>
-
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-7xl mx-auto">
+<!-- Category Page -->
+<div class="container-fluid py-5">
+    <div class="container">
         <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= categoryName %></h1>
-            <p class="text-gray-600">Browse all products in <%= categoryName %></p>
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-4 fw-bold text-primary mb-2">
+                    <%= typeof categoryName !== 'undefined' ? categoryName : (typeof category !== 'undefined' ? category : 'Products') %>
+                </h1>
+                <p class="lead text-muted">
+                    Browse all products in <%= typeof categoryName !== 'undefined' ? categoryName : (typeof category !== 'undefined' ? category : 'this category') %>
+                </p>
+            </div>
         </div>
 
-        <!-- Category Filters and Products -->
-        <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Filters and Products Row -->
+        <div class="row">
             <!-- Filters Sidebar -->
-            <div class="lg:w-1/4">
-                <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
-                    
-                    <!-- Price Range -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                        <div class="flex space-x-2">
-                            <input type="number" 
-                                   id="minPrice" 
-                                   placeholder="Min" 
-                                   class="w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <input type="number" 
-                                   id="maxPrice" 
-                                   placeholder="Max" 
-                                   class="w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm sticky-top" style="top: 100px;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-filter me-2"></i>Filters
+                        </h5>
+                        
+                        <!-- Price Range -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" id="minPrice" placeholder="Min" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" id="maxPrice" placeholder="Max" class="form-control form-control-sm">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Brand Filter -->
-                    <div class="mb-6">
-                        <label for="brand" class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                        <select id="brand" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">All Brands</option>
-                            <% if (brands && brands.length > 0) { %>
-                            <% brands.forEach(brand => { %>
-                            <option value="<%= brand %>"><%= brand %></option>
-                            <% }); %>
-                            <% } %>
-                        </select>
-                    </div>
+                        <!-- Brand Filter -->
+                        <div class="mb-3">
+                            <label for="brand" class="form-label fw-semibold">Brand</label>
+                            <select id="brand" class="form-select form-select-sm">
+                                <option value="">All Brands</option>
+                                <% if (brands && brands.length > 0) { %>
+                                    <% brands.forEach(brand => { %>
+                                        <option value="<%= brand %>"><%= brand %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
 
-                    <!-- Sort Options -->
-                    <div class="mb-6">
-                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-                        <select id="sort" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="relevance">Relevance</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                            <option value="name">Name: A to Z</option>
-                            <option value="rating">Highest Rated</option>
-                            <option value="newest">Newest First</option>
-                        </select>
-                    </div>
+                        <!-- Sort Options -->
+                        <div class="mb-4">
+                            <label for="sort" class="form-label fw-semibold">Sort By</label>
+                            <select id="sort" class="form-select form-select-sm">
+                                <option value="relevance">Relevance</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name: A to Z</option>
+                                <option value="rating">Highest Rated</option>
+                                <option value="newest">Newest First</option>
+                            </select>
+                        </div>
 
-                    <!-- Apply Filters Button -->
-                    <button onclick="applyFilters()" 
-                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
-                        Apply Filters
-                    </button>
+                        <!-- Apply Filters Button -->
+                        <button onclick="applyFilters()" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>Apply Filters
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Products Grid -->
-            <div class="lg:w-3/4">
+            <div class="col-lg-9">
                 <!-- Results Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <p class="text-gray-600">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-0">
                             <% if (products && products.length > 0) { %>
-                            Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalProducts) %> of <%= totalProducts %> products
+                                Showing <%= (page - 1) * limit + 1 %> to <%= Math.min(page * limit, totalProducts) %> of <%= totalProducts %> products
                             <% } else { %>
-                            No products found
+                                No products found
                             <% } %>
                         </p>
                     </div>
-                    
-                    <!-- View Options -->
-                    <div class="flex items-center space-x-2">
-                        <button id="grid-view" class="p-2 rounded-md bg-blue-100 text-blue-600">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                            </svg>
-                        </button>
-                        <button id="list-view" class="p-2 rounded-md text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
+                    <div class="col-md-6 text-md-end">
+                        <!-- View Options -->
+                        <div class="btn-group" role="group">
+                            <button id="grid-view" class="btn btn-outline-primary btn-sm active">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button id="list-view" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
                 <% if (products && products.length > 0) { %>
-                <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <% products.forEach(product => { %>
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <!-- Product Image -->
-                        <div class="relative">
-                            <img src="<%= product.images && product.images[0] ? product.images[0] : '/placeholder.svg' %>" 
-                                 alt="<%= product.name %>" 
-                                 class="w-full h-48 object-cover">
-                            
-                            <!-- Wishlist Button -->
-                            <button onclick="toggleWishlist('<%= product._id %>')" 
-                                    class="absolute top-2 right-2 bg-white text-gray-600 rounded-full p-2 hover:bg-red-500 hover:text-white transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="<%= product.isInWishlist ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                </svg>
-                            </button>
+                    <div id="products-grid" class="row g-4">
+                        <% products.forEach(product => { %>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="card h-100 product-card shadow-sm">
+                                    <!-- Product Image -->
+                                    <div class="position-relative">
+                                        <img src="<%= product.image || (product.images && product.images[0]) || '/images/placeholder.jpg' %>" 
+                                             alt="<%= product.name %>" 
+                                             class="card-img-top" style="height: 250px; object-fit: cover;">
+                                        
+                                        <!-- Wishlist Button -->
+                                        <button onclick="toggleWishlist('<%= product._id %>')" 
+                                                class="btn btn-light btn-sm position-absolute top-0 end-0 m-2">
+                                            <i class="fas fa-heart <%= product.isInWishlist ? 'text-danger' : 'text-muted' %>"></i>
+                                        </button>
+                                        
+                                        <!-- Sale Badge -->
+                                        <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                            <div class="position-absolute top-0 start-0 m-2">
+                                                <span class="badge bg-danger">SALE</span>
+                                            </div>
+                                        <% } %>
+                                    </div>
 
-                            <!-- Sale Badge -->
-                            <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                SALE
-                            </div>
-                            <% } %>
-                        </div>
+                                    <!-- Product Info -->
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <a href="/client/product/<%= product._id %>" class="text-decoration-none">
+                                                <%= product.name %>
+                                            </a>
+                                        </h5>
+                                        
+                                        <!-- Price -->
+                                        <div class="mb-2">
+                                            <span class="h5 text-primary fw-bold">₹<%= product.price.toFixed(2) %></span>
+                                            <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                                <span class="text-muted text-decoration-line-through ms-2">₹<%= product.originalPrice.toFixed(2) %></span>
+                                            <% } %>
+                                        </div>
 
-                        <!-- Product Info -->
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                                <a href="/client/product/<%= product._id %>" class="hover:text-blue-600">
-                                    <%= product.name %>
-                                </a>
-                            </h3>
-                            
-                            <!-- Price -->
-                            <div class="flex items-center space-x-2 mb-3">
-                                <span class="text-xl font-bold text-gray-900">$<%= product.price.toFixed(2) %></span>
-                                <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                                <span class="text-sm text-gray-500 line-through">$<%= product.originalPrice.toFixed(2) %></span>
-                                <% } %>
-                            </div>
+                                        <!-- Rating -->
+                                        <% if (product.rating || product.averageRating) { %>
+                                            <div class="mb-2">
+                                                <% const rating = product.rating || product.averageRating || 0; %>
+                                                <div class="d-flex align-items-center">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <i class="fas fa-star <%= i <= rating ? 'text-warning' : 'text-muted' %>"></i>
+                                                    <% } %>
+                                                    <small class="text-muted ms-1">(<%= product.reviewCount || 0 %>)</small>
+                                                </div>
+                                            </div>
+                                        <% } %>
 
-                            <!-- Rating -->
-                            <% if (product.averageRating) { %>
-                            <div class="flex items-center mb-3">
-                                <div class="flex items-center">
-                                    <% for (let i = 1; i <= 5; i++) { %>
-                                    <svg class="w-4 h-4 <%= i <= product.averageRating ? 'text-yellow-400' : 'text-gray-300' %>" 
-                                         fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    <% } %>
+                                        <!-- Stock Status -->
+                                        <div class="mb-3">
+                                            <% if (product.stock > 0) { %>
+                                                <span class="badge bg-success">In Stock</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="mt-auto">
+                                            <div class="d-grid gap-2">
+                                                <button onclick="addToCart('<%= product._id %>')" 
+                                                        class="btn btn-primary">
+                                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                                </button>
+                                                <a href="/client/product/<%= product._id %>" 
+                                                   class="btn btn-outline-secondary">
+                                                    <i class="fas fa-eye me-2"></i>View Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="text-sm text-gray-600 ml-1">(<%= product.reviewCount || 0 %>)</span>
                             </div>
-                            <% } %>
+                        <% }); %>
+                    </div>
 
-                            <!-- Stock Status -->
-                            <div class="mb-4">
-                                <% if (product.stock > 0) { %>
-                                <span class="text-sm text-green-600 font-medium">In Stock</span>
-                                <% } else { %>
-                                <span class="text-sm text-red-600 font-medium">Out of Stock</span>
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <nav class="mt-5">
+                            <ul class="pagination justify-content-center">
+                                <% if (currentPage > 1) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                                            <i class="fas fa-chevron-left"></i> Previous
+                                        </a>
+                                    </li>
                                 <% } %>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex space-x-2">
-                                <button onclick="addToCart('<%= product._id %>')" 
-                                        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium">
-                                    Add to Cart
-                                </button>
-                                <a href="/client/product/<%= product._id %>" 
-                                   class="bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 transition-colors duration-200 font-medium">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <% }); %>
-                </div>
-
-                <!-- Pagination -->
-                <% if (totalPages > 1) { %>
-                <div class="mt-8 flex justify-center">
-                    <nav class="flex items-center space-x-2">
-                        <% if (page > 1) { %>
-                        <a href="?<%= new URLSearchParams({...queryParams, page: page - 1}) %>" 
-                           class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            Previous
-                        </a>
-                        <% } %>
-                        
-                        <% for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) { %>
-                        <a href="?<%= new URLSearchParams({...queryParams, page: i}) %>" 
-                           class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium <%= i === page ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-50' %>">
-                            <%= i %>
-                        </a>
-                        <% } %>
-                        
-                        <% if (page < totalPages) { %>
-                        <a href="?<%= new URLSearchParams({...queryParams, page: page + 1}) %>" 
-                           class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            Next
-                        </a>
-                        <% } %>
-                    </nav>
-                </div>
-                <% } %>
-
+                                
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                
+                                <% if (currentPage < totalPages) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                                            Next <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    <% } %>
                 <% } else { %>
-                <!-- No Results -->
-                <div class="text-center py-12">
-                    <div class="mb-6">
-                        <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                        </svg>
+                    <!-- No Results -->
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-box-open fa-4x text-muted"></i>
+                        </div>
+                        <h3>No products found in this category</h3>
+                        <p class="text-muted mb-4">Try adjusting your filters or browse other categories.</p>
+                        <a href="/client/shop" class="btn btn-primary">
+                            <i class="fas fa-shopping-bag me-2"></i>Browse All Products
+                        </a>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No products found in this category</h3>
-                    <p class="text-gray-600 mb-6">Try adjusting your filters or browse other categories.</p>
-                    <a href="/client/shop" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Browse All Products
-                    </a>
-                </div>
                 <% } %>
             </div>
         </div>
@@ -228,15 +228,20 @@
 <script>
 // View toggle functionality
 document.getElementById('grid-view').addEventListener('click', function() {
-    document.getElementById('products-grid').className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-    this.className = 'p-2 rounded-md bg-blue-100 text-blue-600';
-    document.getElementById('list-view').className = 'p-2 rounded-md text-gray-400 hover:text-gray-600';
+    document.getElementById('products-grid').className = 'row g-4';
+    this.classList.add('active');
+    document.getElementById('list-view').classList.remove('active');
 });
 
 document.getElementById('list-view').addEventListener('click', function() {
-    document.getElementById('products-grid').className = 'space-y-4';
-    this.className = 'p-2 rounded-md bg-blue-100 text-blue-600';
-    document.getElementById('grid-view').className = 'p-2 rounded-md text-gray-400 hover:text-gray-600';
+    document.getElementById('products-grid').className = 'row g-4';
+    // Convert to list view by changing column classes
+    const productCards = document.querySelectorAll('#products-grid .col-lg-4');
+    productCards.forEach(card => {
+        card.className = 'col-12 mb-3';
+    });
+    this.classList.add('active');
+    document.getElementById('grid-view').classList.remove('active');
 });
 
 // Apply filters
@@ -268,11 +273,13 @@ function toggleWishlist(productId) {
         if (data.success) {
             // Toggle the heart icon
             const button = event.target.closest('button');
-            const svg = button.querySelector('svg');
+            const icon = button.querySelector('i');
             if (data.added) {
-                svg.setAttribute('fill', 'currentColor');
+                icon.classList.remove('text-muted');
+                icon.classList.add('text-danger');
             } else {
-                svg.setAttribute('fill', 'none');
+                icon.classList.remove('text-danger');
+                icon.classList.add('text-muted');
             }
         } else {
             alert('Failed to update wishlist: ' + data.message);
@@ -301,11 +308,11 @@ function addToCart(productId) {
         if (data.success) {
             alert('Product added to cart successfully!');
             // Update cart count in header if it exists
-            const cartCount = document.getElementById('cart-count');
-            if (cartCount) {
-                const currentCount = parseInt(cartCount.textContent) || 0;
-                cartCount.textContent = currentCount + 1;
-            }
+            const cartBadges = document.querySelectorAll('.badge.bg-danger');
+            cartBadges.forEach(badge => {
+                const currentCount = parseInt(badge.textContent) || 0;
+                badge.textContent = currentCount + 1;
+            });
         } else {
             alert('Failed to add product to cart: ' + data.message);
         }
@@ -317,4 +324,3 @@ function addToCart(productId) {
 }
 </script>
 
-<%- include('../partials/footer') %> 

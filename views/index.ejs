@@ -1,541 +1,205 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yadav Collection - Premium Fashion & Handmade Art</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/CSS/style.css">
-    
-    <!-- Fallback Inline CSS -->
-    <style>
-        /* Critical CSS to ensure page displays properly */
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        
-        .navbar-brand {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white !important;
-            text-decoration: none;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .navbar-brand .subtitle {
-            font-size: 0.8rem;
-            font-weight: 400;
-            opacity: 0.9;
-            display: block;
-            margin-top: -5px;
-        }
-        
-        .nav-link {
-            color: white !important;
-            font-weight: 500;
-            padding: 0.5rem 1rem !important;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            margin: 0 0.25rem;
-        }
-        
-        .nav-link:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-1px);
-        }
-        
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.95);
-        }
-        
-        .dropdown-item {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            margin: 0.25rem;
-            transition: all 0.3s ease;
-        }
-        
-        .dropdown-item:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateX(5px);
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 120px 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="heroGrain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23heroGrain)"/></svg>');
-            opacity: 0.3;
-        }
-        
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .btn {
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 1.1rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
-            color: white;
-        }
-        
-        .btn-outline-light {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-            box-shadow: 0 8px 25px rgba(255,255,255,0.2);
-        }
-        
-        .btn-outline-light:hover {
-            background: white;
-            color: #667eea;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255,255,255,0.3);
-        }
-        
-        .features-section {
-            padding: 100px 0;
-            background: white;
-        }
-        
-        .feature-card {
-            text-align: center;
-            padding: 3rem 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-            transition: all 0.3s ease;
-            background: white;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        }
-        
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 2rem;
-            color: white;
-            font-size: 2rem;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-        
-        .feature-card h4 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        
-        .feature-card p {
-            color: #666;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-        
-        .products-section {
-            padding: 100px 0;
-            background: #f8f9fa;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 3rem;
-            color: #333;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            margin-bottom: 2rem;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-        }
-        
-        .product-info {
-            padding: 1.5rem;
-        }
-        
-        .product-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        
-        .product-price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #ff6b6b;
-        }
-        
-        .footer {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 60px 0 30px;
-        }
-        
-        .footer h5 {
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #ecf0f1;
-        }
-        
-        .footer p, .footer a {
-            color: #bdc3c7;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .footer a:hover {
-            color: #3498db;
-        }
-        
-        .footer-bottom {
-            border-top: 1px solid #34495e;
-            padding-top: 30px;
-            margin-top: 40px;
-            text-align: center;
-        }
-        
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .hero-subtitle {
-                font-size: 1.1rem;
-            }
-            
-            .btn {
-                padding: 12px 25px;
-                font-size: 1rem;
-            }
-            
-            .feature-card {
-                padding: 2rem 1.5rem;
-            }
-        }
-        
-        /* Session debugging styles */
-        .session-debug {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            z-index: 9999;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <span class="fw-bold">Yadav Collection</span>
-                <span class="subtitle">Premium Fashion & Handmade Art</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/client/shop">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/client/deals">Deals</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">About</a>
-                    </li>
-                    
-                    <% if (typeof user !== 'undefined' && user) { %>
-                        <!-- Profile Section (shown when logged in) -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-2"></i><%= user.firstName || user.name || 'Profile' %>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/users/profile"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                                <li><a class="dropdown-item" href="/users/orders"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item logout-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </li>
-                    <% } else { %>
-                        <!-- Auth Section (shown when not logged in) -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="/users/login"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/users/register"><i class="fas fa-user-plus me-2"></i>Register</a>
-                        </li>
-                    <% } %>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+<!-- INDEX.EJS - This page should use the layout -->
 <!-- Hero Section -->
-        <section class="hero-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <h1 class="hero-title">Welcome to Yadav Collection</h1>
-                    <p class="hero-subtitle">Discover premium fashion and exquisite handmade art crafted with passion and tradition</p>
-                    <div class="hero-buttons">
-                        <a href="/client/shop" class="btn btn-primary me-3">Shop Now</a>
-                        <a href="/client/deals" class="btn btn-outline-light">View Deals</a>
-                    </div>
-                </div>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-        <section class="features-section">
+<section class="hero-section">
     <div class="container">
-                <div class="row">
-                <div class="col-lg-4 col-md-6">
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-shipping-fast"></i>
-                        </div>
-                        <h4>Fast Shipping</h4>
-                        <p>Free shipping on orders over $50. Quick delivery to your doorstep.</p>
-                    </div>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title">Welcome to Yadav Collection</h1>
+                <p class="hero-subtitle">Your premium destination for fashion and handmade art. Quality, style, and tradition combined.</p>
+                <div class="hero-buttons">
+                    <a href="/client/shop" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                    <a href="/about" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-medal"></i>
-                        </div>
-                        <h4>Premium Quality</h4>
-                        <p>Handcrafted with care using the finest materials and traditional techniques.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-headset"></i>
-                </div>
-                        <h4>24/7 Support</h4>
-                        <p>Our customer service team is always here to help you with any questions.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image">
+                    <img src="/images/hero-fashion.jpg" alt="Yadav Collection Fashion" class="img-fluid rounded">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-        <!-- Featured Products Section -->
-        <section class="products-section">
+<!-- Message Display -->
+<% if (typeof message !== 'undefined' && message) { %>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <% if (message === 'login_success') { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Welcome back!</strong> You have successfully logged in.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <%= message %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<!-- Featured Products Section -->
+<section class="featured-products py-5">
     <div class="container">
-                <h2 class="section-title">Featured Products</h2>
-            <p class="section-subtitle">Discover our most popular and trending items</p>
-                
         <div class="row">
-            <% if (featuredProducts && featuredProducts.length > 0) { %>
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Featured Products</h2>
+                <p class="section-subtitle">Discover our handpicked collection of premium fashion and art pieces</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <% if (typeof featuredProducts !== 'undefined' && featuredProducts.length > 0) { %>
                 <% featuredProducts.forEach(product => { %>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product-card">
-                                <img src="<%= product.images && product.images[0] ? product.images[0] : '/placeholder.svg' %>" 
-                                     class="product-image" alt="<%= product.name %>">
-                                <div class="product-info">
-                                    <h5 class="product-title"><%= product.name %></h5>
-                                    <div class="product-price">$<%= product.price %></div>
-                                    <a href="/client/product/<%= product._id %>" class="btn btn-primary w-100">View Details</a>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <img src="<%= product.image %>" alt="<%= product.name %>" class="img-fluid">
+                                <div class="product-overlay">
+                                    <a href="/client/product/<%= product._id || product.id %>" class="btn btn-primary">
+                                        <i class="fas fa-eye me-2"></i>View Details
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <h5 class="product-title"><%= product.name %></h5>
+                                <div class="product-price">
+                                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                        <span class="original-price">₹<%= product.originalPrice %></span>
+                                        <span class="current-price">₹<%= product.price %></span>
+                                        <span class="discount-savings">
+                                            <i class="fas fa-tag me-1"></i>Save ₹<%= (product.originalPrice - product.price).toFixed(0) %>
+                                        </span>
+                                    <% } else if (product.discount && product.discount > 0) { %>
+                                        <% const originalPrice = (product.price / (1 - product.discount / 100)).toFixed(0) %>
+                                        <span class="original-price">₹<%= originalPrice %></span>
+                                        <span class="current-price">₹<%= product.price %></span>
+                                        <span class="discount-savings">
+                                            <i class="fas fa-tag me-1"></i>Save ₹<%= (originalPrice - product.price).toFixed(0) %>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="current-price">₹<%= product.price %></span>
+                                    <% } %>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart-btn" data-product-id="<%= product._id || product.id %>">
+                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 <% }); %>
             <% } else { %>
                 <div class="col-12 text-center">
-                        <p>No featured products available at the moment.</p>
-                        <a href="/client/shop" class="btn btn-primary">Browse All Products</a>
+                    <div class="no-products">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <h4>No Featured Products</h4>
+                        <p class="text-muted">Check back soon for our latest featured products!</p>
+                    </div>
                 </div>
             <% } %>
         </div>
     </div>
 </section>
 
-    <!-- Footer -->
-<%- include('partials/footer') %>
+<!-- Categories Section -->
+<section class="categories-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Shop by Category</h2>
+                <p class="section-subtitle">Explore our diverse collection across different categories</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-female fa-3x"></i>
+                    </div>
+                    <h4>Women's Fashion</h4>
+                    <p>Elegant dresses, trendy tops, and stylish accessories</p>
+                    <a href="/client/shop?category=Women" class="btn btn-primary">Shop Women</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-male fa-3x"></i>
+                    </div>
+                    <h4>Men's Fashion</h4>
+                    <p>Classic shirts, formal suits, and casual wear</p>
+                    <a href="/client/shop?category=Men" class="btn btn-primary">Shop Men</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-child fa-3x"></i>
+                    </div>
+                    <h4>Kids Fashion</h4>
+                    <p>Adorable clothing for children of all ages</p>
+                    <a href="/client/shop?category=Kids" class="btn btn-primary">Shop Kids</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-palette fa-3x"></i>
+                    </div>
+                    <h4>Art & Paintings</h4>
+                    <p>Beautiful handmade art and paintings</p>
+                    <a href="/client/shop?category=Paintings" class="btn btn-primary">Shop Art</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Session check and debugging
-        async function checkSession() {
-            try {
-                const response = await fetch('/check-session');
-                const data = await response.json();
-                console.log('Session data:', data);
-                
-                // Show debug info in development
-                if (window.location.hostname === 'localhost') {
-                    showSessionDebug(data);
-                }
-            } catch (error) {
-                console.error('Session check error:', error);
-            }
-        }
-        
-        function showSessionDebug(data) {
-            const debugDiv = document.createElement('div');
-            debugDiv.className = 'session-debug';
-            debugDiv.innerHTML = `
-                <strong>Session Debug:</strong><br>
-                Has Session: ${data.hasSession}<br>
-                User: ${data.user ? data.user.firstName : 'None'}<br>
-                Session ID: ${data.sessionId ? data.sessionId.substring(0, 8) + '...' : 'None'}
-            `;
-            document.body.appendChild(debugDiv);
-            
-            // Show for 5 seconds then hide
-                    setTimeout(() => {
-                debugDiv.style.display = 'none';
-            }, 5000);
-        }
-        
-        // Check session on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            checkSession();
-        });
-        
-        // Handle logout
-        function logout() {
-            fetch('/users/logout')
-                .then(() => {
-                    window.location.reload();
-            })
-            .catch(error => {
-                    console.error('Logout error:', error);
-                    window.location.reload();
-                });
-        }
-        
-        // Add logout event listeners
-        document.addEventListener('click', function(e) {
-            if (e.target.matches('.logout-link') || e.target.closest('.logout-link')) {
-                e.preventDefault();
-                logout();
-            }
-});
-</script>
-</body>
-</html>
+<!-- Special Offers Section -->
+<section class="offers-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Special Offers</h2>
+                <p class="section-subtitle">Don't miss out on our amazing deals and discounts</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="offer-card">
+                    <div class="offer-content">
+                        <h3>New Arrivals</h3>
+                        <p>Get up to 30% off on our latest collection</p>
+                        <a href="/client/new-arrivals" class="btn btn-primary">Shop Now</a>
+                    </div>
+                    <div class="offer-image">
+                        <img src="/images/new-arrivals.jpg" alt="New Arrivals" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="offer-card">
+                    <div class="offer-content">
+                        <h3>Best Sellers</h3>
+                        <p>Our most popular items with special pricing</p>
+                        <a href="/client/best-sellers" class="btn btn-primary">Shop Now</a>
+                    </div>
+                    <div class="offer-image">
+                        <img src="/images/best-sellers.jpg" alt="Best Sellers" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

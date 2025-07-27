@@ -920,7 +920,7 @@ class ProductService {
 
   static async warmupCache() {
     // Static warmup is a no-op since we don't have cache service
-    console.log('Static warmupCache called - no cache service available')
+    // Static warmupCache called - no cache service available
   }
 }
 

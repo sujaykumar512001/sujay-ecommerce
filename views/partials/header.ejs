@@ -405,6 +405,40 @@
                 console.log('[Header] Logout cancelled by user');
             }
         }
+
+        // Global logout function - ensures consistent logout behavior across the site
+        function logout() {
+            console.log('[Global] Logout function called');
+            
+            // Use enhanced logout handler if available
+            if (window.logoutHandler) {
+                console.log('[Global] Using enhanced logout handler');
+                window.logoutHandler.handleLogout({ preventDefault: () => {} });
+            } else {
+                console.log('[Global] Using fallback logout');
+                // Fallback to direct logout with redirection to home page
+                fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                })
+                .then(response => {
+                    console.log('[Global] Logout response:', response.status);
+                    // Always redirect to home page regardless of response
+                    window.location.href = '/';
+                })
+                .catch(error => {
+                    console.error('[Global] Logout error:', error);
+                    // Even if logout fails, redirect to home page
+                    window.location.href = '/';
+                });
+            }
+        }
+
+        // Make logout function globally available
+        window.logout = logout;
         
         // Test function to manually show dropdown
         function testShowDropdown() {

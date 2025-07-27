@@ -6,6 +6,7 @@ const { generateToken } = require("../utils/generateToken")
 const { sendEmail, emailTemplates } = require("../utils/sendEmail")
 const CONSTANTS = require("../config/constants")
 const router = express.Router()
+const jwt = require("jsonwebtoken")
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -65,7 +66,7 @@ router.post("/register", async (req, res) => {
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
-      fullName: user.fullName,
+      fullName: `${user.firstName} ${user.lastName}`,
       email: user.email,
       role: user.role,
       username: user.username
@@ -86,7 +87,7 @@ router.post("/register", async (req, res) => {
           id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
-            fullName: user.fullName,
+            fullName: `${user.firstName} ${user.lastName}`,
           email: user.email,
           role: user.role,
         },
@@ -96,6 +97,23 @@ router.post("/register", async (req, res) => {
     })
   } catch (error) {
     console.error("Registration error:", error)
+    
+    // Handle validation errors specifically
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ 
+        message: "Validation failed", 
+        errors: validationErrors 
+      });
+    }
+    
+    // Handle duplicate email error
+    if (error.code === 11000 && error.keyPattern?.email) {
+      return res.status(CONSTANTS.STATUS_CODES.CONFLICT).json({ 
+        message: "User already exists with this email" 
+      });
+    }
+    
     res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SERVER_ERROR })
   }
 })
@@ -141,7 +159,7 @@ router.post("/login", async (req, res) => {
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
-      fullName: user.fullName,
+      fullName: `${user.firstName} ${user.lastName}`,
       email: user.email,
       role: user.role,
       username: user.username
@@ -168,7 +186,7 @@ router.post("/login", async (req, res) => {
           id: user._id,
               firstName: user.firstName,
               lastName: user.lastName,
-              fullName: user.fullName,
+              fullName: `${user.firstName} ${user.lastName}`,
           email: user.email,
           role: user.role,
         },
@@ -176,8 +194,8 @@ router.post("/login", async (req, res) => {
       },
         })
       } else {
-        // Form submission - redirect to home
-        res.redirect('/?message=login_success')
+        // Form submission - redirect to user profile
+        res.redirect('/users/profile?message=login_success')
       }
     })
   } catch (error) {
@@ -191,7 +209,7 @@ router.post("/login", async (req, res) => {
 // @access  Private
 router.get("/me", require("../middleware/auth").protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("wishlist")
+    const user = await User.findById(req.user._id)
 
     res.json({
       success: true,
@@ -204,7 +222,6 @@ router.get("/me", require("../middleware/auth").protect, async (req, res) => {
           avatar: user.avatar,
           phone: user.phone,
           address: user.address,
-          wishlist: user.wishlist,
           isActive: user.isActive,
           emailVerified: user.emailVerified,
           createdAt: user.createdAt,
@@ -221,10 +238,46 @@ router.get("/me", require("../middleware/auth").protect, async (req, res) => {
 // @route   POST /api/auth/logout
 // @access  Private
 router.post("/logout", (req, res) => {
-  res.json({
-    success: true,
-    message: "Logged out successfully",
-  })
+  try {
+    // Clear session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destroy error:', err);
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      
+      res.json({
+        success: true,
+        message: "Logged out successfully",
+      })
+    })
+  } catch (error) {
+    console.error("Logout error:", error)
+    res.status(500).json({ message: "Server error during logout" })
+  }
+})
+
+// @desc    Logout user (GET method for compatibility)
+// @route   GET /api/auth/logout
+// @access  Private
+router.get("/logout", (req, res) => {
+  try {
+    // Clear session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destroy error:', err);
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      
+      res.json({
+        success: true,
+        message: "Logged out successfully",
+      })
+    })
+  } catch (error) {
+    console.error("Logout error:", error)
+    res.status(500).json({ message: "Server error during logout" })
+  }
 })
 
 // Web logout route for session-based logout
@@ -255,7 +308,8 @@ router.post("/web/login", (req, res, next) => {
         return res.redirect("/login")
       }
       req.flash("success", `Welcome back, ${user.firstName || user.username}!`)
-      const redirectUrl = req.session.returnTo || "/"
+      // Redirect to user profile instead of home page
+      const redirectUrl = req.session.returnTo || "/users/profile"
       delete req.session.returnTo
       res.redirect(redirectUrl)
     })
@@ -265,30 +319,37 @@ router.post("/web/login", (req, res, next) => {
 // Session-based register for web interface
 router.post("/web/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body
+    console.log("Full request body:", req.body)
+    console.log("Request headers:", req.headers['content-type'])
+    console.log("Request method:", req.method)
+    
+    const { firstName, lastName, email, password } = req.body
+    
+    console.log("Registration attempt:", { firstName, lastName, email, password: password ? "***" : "missing" })
 
     // Validation
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
+      console.log("Validation failed: missing fields")
+      console.log("FirstName:", firstName, "LastName:", lastName, "Email:", email, "Password:", password ? "present" : "missing")
       req.flash("error", "Please provide all required fields")
-      return res.redirect("/register")
+      return res.redirect("/clean/register")
     }
 
     if (password.length < 6) {
+      console.log("Validation failed: password too short")
       req.flash("error", "Password must be at least 6 characters")
-      return res.redirect("/register")
+      return res.redirect("/clean/register")
     }
 
     // Check if user exists
     const existingUser = await User.findOne({ email: email.toLowerCase() })
     if (existingUser) {
+      console.log("User already exists:", email)
       req.flash("error", "User already exists with this email")
-      return res.redirect("/register")
+      return res.redirect("/clean/register")
     }
 
-    // Split name into firstName and lastName
-    const nameParts = name.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || firstName; // Use firstName as lastName if only one name provided
+    console.log("Creating new user...")
 
     // Generate unique username
     let username = email.split('@')[0];
@@ -300,12 +361,14 @@ router.post("/web/register", async (req, res) => {
 
     // Create user
     const user = await User.create({
-      firstName,
-      lastName,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
       username,
       email: email.toLowerCase(),
       password,
     })
+
+    console.log("User created successfully:", user._id)
 
     // Send welcome email
     try {
@@ -318,12 +381,21 @@ router.post("/web/register", async (req, res) => {
       console.error("Welcome email failed:", emailError)
     }
 
-    req.flash("success", "Registration successful! Please log in.")
-    res.redirect("/login")
+    // Auto-login after registration
+    req.logIn(user, (err) => {
+      if (err) {
+        console.log("Auto-login failed:", err.message)
+        req.flash("error", "Registration successful but auto-login failed. Please log in manually.")
+        return res.redirect("/clean/login")
+      }
+      console.log("Auto-login successful, redirecting to home page")
+      req.flash("success", `Welcome to Yadav Collection, ${user.firstName}!`)
+      res.redirect("/")
+    })
   } catch (error) {
     console.error("Registration error:", error)
     req.flash("error", "Registration failed. Please try again.")
-    res.redirect("/register")
+    res.redirect("/clean/register")
   }
 })
 
@@ -433,5 +505,118 @@ router.post("/admin/logout", (req, res) => {
     })
   })
 })
+
+// Session check endpoint for keep-alive
+router.get("/session-check", (req, res) => {
+  if (req.isAuthenticated() || (req.session && req.session.user)) {
+    // Refresh session
+    if (req.session) {
+      req.session.touch();
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error in session-check:', err);
+        }
+      });
+    }
+    res.json({ 
+      success: true, 
+      authenticated: true,
+      user: req.user || req.session.user,
+      sessionId: req.sessionID,
+      expires: req.session ? req.session.cookie.expires : null
+    });
+  } else {
+    res.status(401).json({ 
+      success: false, 
+      authenticated: false,
+      message: 'Session expired' 
+    });
+  }
+});
+
+// Session health check endpoint
+router.get("/session-health", (req, res) => {
+  const sessionInfo = {
+    hasSession: !!req.session,
+    sessionId: req.sessionID,
+    isAuthenticated: req.isAuthenticated(),
+    hasUser: !!(req.user || (req.session && req.session.user)),
+    user: req.user || req.session?.user,
+    cookieExpires: req.session ? req.session.cookie.expires : null,
+    cookieMaxAge: req.session ? req.session.cookie.maxAge : null,
+    timestamp: new Date().toISOString()
+  };
+  
+  res.json({
+    success: true,
+    session: sessionInfo
+  });
+});
+
+// Session recovery endpoint
+router.post("/session-recover", async (req, res) => {
+  try {
+    const { email, token } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email is required for session recovery' 
+      });
+    }
+    
+    // Find user by email
+    const user = await User.findOne({ email }).select('-password');
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    // If token is provided, verify it
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+        if (decoded.userId !== user._id.toString()) {
+          return res.status(401).json({ 
+            success: false, 
+            message: 'Invalid token' 
+          });
+        }
+      } catch (error) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Invalid token' 
+        });
+      }
+    }
+    
+    // Restore session
+    req.session.user = user;
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session recovery save error:', err);
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Failed to restore session' 
+        });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'Session restored successfully',
+        user: user
+      });
+    });
+    
+  } catch (error) {
+    console.error('Session recovery error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Session recovery failed' 
+    });
+  }
+});
 
 module.exports = router

@@ -1,5 +1,4 @@
 <%- include('../partials/header') %>
-
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
         <!-- Page Header -->
@@ -7,7 +6,6 @@
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Product Comparison</h1>
             <p class="text-gray-600">Compare products side by side to make the best choice</p>
         </div>
-
         <!-- Comparison Table -->
         <% if (products && products.length > 0) { %>
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -45,7 +43,6 @@
                             </td>
                             <% }); %>
                         </tr>
-
                         <!-- Rating Row -->
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">Rating</td>
@@ -67,7 +64,6 @@
                             </td>
                             <% }); %>
                         </tr>
-
                         <!-- Stock Row -->
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">Stock</td>
@@ -81,7 +77,6 @@
                             </td>
                             <% }); %>
                         </tr>
-
                         <!-- Category Row -->
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">Category</td>
@@ -91,7 +86,6 @@
                             </td>
                             <% }); %>
                         </tr>
-
                         <!-- Brand Row -->
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">Brand</td>
@@ -101,7 +95,6 @@
                             </td>
                             <% }); %>
                         </tr>
-
                         <!-- Description Row -->
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">Description</td>
@@ -111,7 +104,6 @@
                             </td>
                             <% }); %>
                         </tr>
-
                         <!-- Actions Row -->
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">Actions</td>
@@ -138,7 +130,6 @@
                 </table>
             </div>
         </div>
-
         <% } else { %>
         <!-- Empty State -->
         <div class="text-center py-12">
@@ -157,7 +148,6 @@
         <% } %>
     </div>
 </div>
-
 <script>
 function removeFromCompare(productId) {
     if (confirm('Are you sure you want to remove this product from comparison?')) {
@@ -180,7 +170,6 @@ function removeFromCompare(productId) {
         });
     }
 }
-
 function addToCart(productId) {
     fetch('/api/cart/add', {
         method: 'POST',
@@ -211,7 +200,6 @@ function addToCart(productId) {
         alert('An error occurred while adding to cart');
     });
 }
-
 function addToWishlist(productId) {
     fetch('/api/users/wishlist/' + productId, {
         method: 'POST',
@@ -234,4 +222,3 @@ function addToWishlist(productId) {
 }
 </script>
 
-<%- include('../partials/footer') %> 

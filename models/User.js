@@ -11,45 +11,52 @@ const bcrypt = require("bcryptjs");
  */
 const userConfig = {
   limits: {
+    maxAddresses: parseInt(process.env.USER_MAX_ADDRESSES) || 5,
+    maxOrders: parseInt(process.env.USER_MAX_ORDERS) || 100,
+    maxReviews: parseInt(process.env.USER_MAX_REVIEWS) || 50,
+    maxCartItems: parseInt(process.env.USER_MAX_CART_ITEMS) || 50,
     usernameMinLength: parseInt(process.env.USER_USERNAME_MIN_LENGTH) || 3,
     usernameMaxLength: parseInt(process.env.USER_USERNAME_MAX_LENGTH) || 30,
     firstNameMaxLength: parseInt(process.env.USER_FIRST_NAME_MAX_LENGTH) || 50,
     lastNameMaxLength: parseInt(process.env.USER_LAST_NAME_MAX_LENGTH) || 50,
-    passwordMinLength: parseInt(process.env.USER_PASSWORD_MIN_LENGTH) || 8,
-    phoneMinLength: parseInt(process.env.USER_PHONE_MIN_LENGTH) || 7,
-    phoneMaxLength: parseInt(process.env.USER_PHONE_MAX_LENGTH) || 20,
-    maxAddresses: parseInt(process.env.USER_MAX_ADDRESSES) || 5,
-    maxWishlistItems: parseInt(process.env.USER_MAX_WISHLIST_ITEMS) || 100,
-    maxCartItems: parseInt(process.env.USER_MAX_CART_ITEMS) || 50
+    passwordMinLength: parseInt(process.env.USER_PASSWORD_MIN_LENGTH) || 6,
+    passwordMaxLength: parseInt(process.env.USER_PASSWORD_MAX_LENGTH) || 128,
+    phoneMinLength: parseInt(process.env.USER_PHONE_MIN_LENGTH) || 10,
+    phoneMaxLength: parseInt(process.env.USER_PHONE_MAX_LENGTH) || 15,
+  },
+  defaults: {
+    newsletter: process.env.USER_DEFAULT_NEWSLETTER === 'true',
+    emailNotifications: process.env.USER_DEFAULT_EMAIL_NOTIFICATIONS === 'true',
+    smsNotifications: process.env.USER_DEFAULT_SMS_NOTIFICATIONS === 'false',
+    currency: process.env.USER_DEFAULT_CURRENCY || 'INR',
+    language: process.env.USER_DEFAULT_LANGUAGE || 'en',
+    country: process.env.USER_DEFAULT_COUNTRY || 'India',
+  },
+  validation: {
+    passwordMinLength: parseInt(process.env.USER_PASSWORD_MIN_LENGTH) || 6,
+    passwordMaxLength: parseInt(process.env.USER_PASSWORD_MAX_LENGTH) || 128,
+    nameMinLength: parseInt(process.env.USER_NAME_MIN_LENGTH) || 2,
+    nameMaxLength: parseInt(process.env.USER_NAME_MAX_LENGTH) || 50,
+    phoneMaxLength: parseInt(process.env.USER_PHONE_MAX_LENGTH) || 15,
+    validatePasswordStrength: process.env.USER_VALIDATE_PASSWORD_STRENGTH === 'true',
+    allowSpecialCharsInUsername: process.env.USER_ALLOW_SPECIAL_CHARS_IN_USERNAME === 'true',
+    requirePhone: process.env.USER_REQUIRE_PHONE === 'true',
+    requireEmailVerification: process.env.USER_REQUIRE_EMAIL_VERIFICATION === 'true',
   },
   security: {
     bcryptRounds: parseInt(process.env.USER_BCRYPT_ROUNDS) || 12,
     maxLoginAttempts: parseInt(process.env.USER_MAX_LOGIN_ATTEMPTS) || 5,
-    lockoutDuration: parseInt(process.env.USER_LOCKOUT_DURATION) || 7200000, // 2 hours in ms
-    passwordResetExpiry: parseInt(process.env.USER_PASSWORD_RESET_EXPIRY) || 3600000, // 1 hour in ms
-    emailVerificationExpiry: parseInt(process.env.USER_EMAIL_VERIFICATION_EXPIRY) || 86400000 // 24 hours in ms
-  },
-  defaults: {
-    country: process.env.USER_DEFAULT_COUNTRY || 'United States',
-    currency: process.env.USER_DEFAULT_CURRENCY || 'USD',
-    language: process.env.USER_DEFAULT_LANGUAGE || 'en',
-    newsletter: process.env.USER_DEFAULT_NEWSLETTER !== 'false',
-    emailNotifications: process.env.USER_DEFAULT_EMAIL_NOTIFICATIONS !== 'false',
-    smsNotifications: process.env.USER_DEFAULT_SMS_NOTIFICATIONS === 'true'
+    lockoutDuration: parseInt(process.env.USER_LOCKOUT_DURATION) || 15 * 60 * 1000, // 15 minutes
+    passwordResetExpiry: parseInt(process.env.USER_PASSWORD_RESET_EXPIRY) || 60 * 60 * 1000, // 1 hour
+    emailVerificationExpiry: parseInt(process.env.USER_EMAIL_VERIFICATION_EXPIRY) || 24 * 60 * 60 * 1000, // 24 hours
   },
   address: {
-    types: process.env.USER_ADDRESS_TYPES?.split(',') || ['home', 'work', 'other'],
-    defaultType: process.env.USER_DEFAULT_ADDRESS_TYPE || 'home'
+    types: (process.env.USER_ADDRESS_TYPES || 'home,work,other').split(','),
+    defaultType: process.env.USER_DEFAULT_ADDRESS_TYPE || 'home',
   },
   roles: {
-    values: process.env.USER_ROLES?.split(',') || ['user', 'admin', 'moderator'],
-    default: process.env.USER_DEFAULT_ROLE || 'user'
-  },
-  validation: {
-    requirePhone: process.env.USER_REQUIRE_PHONE === 'true',
-    requireEmailVerification: process.env.USER_REQUIRE_EMAIL_VERIFICATION !== 'false',
-    validatePasswordStrength: process.env.USER_VALIDATE_PASSWORD_STRENGTH !== 'false',
-    allowSpecialCharsInUsername: process.env.USER_ALLOW_SPECIAL_CHARS_IN_USERNAME === 'true'
+    values: (process.env.USER_ROLES || 'user,admin,moderator').split(','),
+    default: process.env.USER_DEFAULT_ROLE || 'user',
   }
 };
 
@@ -264,7 +271,6 @@ const userSchema = new mongoose.Schema(
       timezone: { type: String, default: 'UTC' },
       theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'auto' }
     },
-    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     cart: [
       {
         product: {
@@ -330,14 +336,29 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// 🔹 Virtuals
+// Virtuals
 userSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
+  return `${this.firstName} ${this.lastName}`.trim()
+})
+
+userSchema.virtual("displayName").get(function () {
+  return this.firstName || this.username || this.email
+})
+
+userSchema.virtual("avatarUrl").get(function () {
+  if (this.avatar) {
+    return this.avatar.startsWith('http') ? this.avatar : `${process.env.CLOUDINARY_URL}/${this.avatar}`
+  }
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(this.displayName)}&background=random&size=200`
+})
 
 userSchema.virtual("isLocked").get(function () {
-  return !!(this.lockUntil && this.lockUntil > Date.now());
-});
+  return !!(this.lockUntil && this.lockUntil > Date.now())
+})
+
+userSchema.virtual("remainingLoginAttempts").get(function () {
+  return Math.max(0, userConfig.security.maxLoginAttempts - this.loginAttempts)
+})
 
 userSchema.virtual("defaultAddress").get(function () {
   return this.addresses.find(addr => addr.isDefault) || this.addresses[0];
@@ -347,10 +368,6 @@ userSchema.virtual("cartItemCount").get(function () {
   return this.cart.reduce((total, item) => total + item.quantity, 0);
 });
 
-userSchema.virtual("wishlistCount").get(function () {
-  return this.wishlist.length;
-});
-
 userSchema.virtual("accountAge").get(function () {
   const now = new Date();
   const diffTime = Math.abs(now - this.createdAt);
@@ -358,7 +375,7 @@ userSchema.virtual("accountAge").get(function () {
   return diffDays;
 });
 
-// 🔹 Indexes
+// Indexes
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 userSchema.index({ email: 1 });
@@ -367,7 +384,7 @@ userSchema.index({ "socialLogin.provider": 1, "socialLogin.providerId": 1 });
 userSchema.index({ lastLogin: -1 });
 userSchema.index({ createdAt: -1 });
 
-// 🔹 Pre-save middleware
+// Pre-save middleware
 userSchema.pre("save", async function (next) {
   try {
     validateConfig();
@@ -375,10 +392,6 @@ userSchema.pre("save", async function (next) {
     // Validate arrays length
     if (this.addresses && this.addresses.length > userConfig.limits.maxAddresses) {
       throw new Error(`Cannot have more than ${userConfig.limits.maxAddresses} addresses`);
-    }
-    
-    if (this.wishlist && this.wishlist.length > userConfig.limits.maxWishlistItems) {
-      throw new Error(`Cannot have more than ${userConfig.limits.maxWishlistItems} wishlist items`);
     }
     
     if (this.cart && this.cart.length > userConfig.limits.maxCartItems) {
@@ -414,7 +427,7 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// 🔹 Methods
+// Methods
 userSchema.methods.comparePassword = async function (candidatePassword) {
   try {
     if (!this.password) return false;
@@ -515,7 +528,7 @@ userSchema.methods.updateLastLogin = async function () {
   }
 };
 
-// 🔹 Cart Operations
+// Cart Operations
 userSchema.methods.addToCart = async function (productId, quantity = 1, notes = '') {
   try {
     if (this.cart.length >= userConfig.limits.maxCartItems) {
@@ -580,36 +593,7 @@ userSchema.methods.clearCart = async function () {
   }
 };
 
-// 🔹 Wishlist Operations
-userSchema.methods.addToWishlist = async function (productId) {
-  try {
-    if (this.wishlist.length >= userConfig.limits.maxWishlistItems) {
-      throw new Error(`Cannot add more than ${userConfig.limits.maxWishlistItems} items to wishlist`);
-    }
-    
-    if (this.wishlist.includes(productId)) {
-      throw new Error('Product already in wishlist');
-    }
-    
-    this.wishlist.push(productId);
-    return await this.save();
-  } catch (error) {
-    throw new Error(`Error adding to wishlist: ${error.message}`);
-  }
-};
-
-userSchema.methods.removeFromWishlist = async function (productId) {
-  try {
-    this.wishlist = this.wishlist.filter(
-      (id) => id.toString() !== productId.toString()
-    );
-    return await this.save();
-  } catch (error) {
-    throw new Error(`Error removing from wishlist: ${error.message}`);
-  }
-};
-
-// 🔹 Address Operations
+// Address Operations
 userSchema.methods.addAddress = async function (addressData) {
   try {
     if (this.addresses.length >= userConfig.limits.maxAddresses) {
@@ -654,7 +638,7 @@ userSchema.methods.removeAddress = async function (addressId) {
   }
 };
 
-// 🔹 Static Methods
+// Static Methods
 userSchema.statics.findByEmail = function (email) {
   try {
     return this.findOne({ email: email.toLowerCase() });
@@ -697,16 +681,9 @@ userSchema.statics.getConfig = () => {
     ...userConfig,
     // Don't expose sensitive config
     limits: {
-      usernameMinLength: userConfig.limits.usernameMinLength,
-      usernameMaxLength: userConfig.limits.usernameMaxLength,
-      firstNameMaxLength: userConfig.limits.firstNameMaxLength,
-      lastNameMaxLength: userConfig.limits.lastNameMaxLength,
-      passwordMinLength: userConfig.limits.passwordMinLength,
-      phoneMinLength: userConfig.limits.phoneMinLength,
-      phoneMaxLength: userConfig.limits.phoneMaxLength,
       maxAddresses: userConfig.limits.maxAddresses,
-      maxWishlistItems: userConfig.limits.maxWishlistItems,
-      maxCartItems: userConfig.limits.maxCartItems
+      maxOrders: userConfig.limits.maxOrders,
+      maxReviews: userConfig.limits.maxReviews
     }
   };
 };

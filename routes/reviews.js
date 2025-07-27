@@ -6,10 +6,63 @@ const CONSTANTS = require("../config/constants")
 
 const router = express.Router()
 
-// @desc    Get all reviews (admin only)
+// @desc    Get all reviews (public)
 // @route   GET /api/reviews
+// @access  Public
+router.get("/", async (req, res) => {
+  try {
+    const { page = 1, limit = CONSTANTS.REVIEWS_PAGE_SIZE, productId, rating } = req.query
+    const skip = (page - 1) * limit
+
+    const query = {}
+    if (productId) {
+      query._id = productId
+    }
+
+    const products = await Product.find(query)
+      .populate("reviews.user", "name email")
+      .select("name reviews")
+      .sort({ "reviews.createdAt": -1 })
+      .skip(skip)
+      .limit(Number(limit))
+
+    // Flatten reviews from all products
+    const allReviews = []
+    products.forEach(product => {
+      product.reviews.forEach(review => {
+        if (!rating || review.rating === Number(rating)) {
+          allReviews.push({
+            ...review.toObject(),
+            productName: product.name,
+            productId: product._id
+          })
+        }
+      })
+    })
+
+    const totalReviews = allReviews.length
+
+    res.json({
+      success: true,
+      data: {
+        reviews: allReviews,
+        pagination: {
+          currentPage: Number(page),
+          totalPages: Math.ceil(totalReviews / limit),
+          totalReviews,
+        },
+      },
+    })
+  } catch (error) {
+    console.error("Get all reviews error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+// @desc    Get all reviews (admin only)
+// @route   GET /api/reviews/admin
 // @access  Private (Admin)
-router.get("/", protect, requireAdmin, async (req, res) => {
+router.get("/admin", protect, requireAdmin, async (req, res) => {
   try {
     const { page = 1, limit = CONSTANTS.REVIEWS_PAGE_SIZE, productId, rating } = req.query
     const skip = (page - 1) * limit

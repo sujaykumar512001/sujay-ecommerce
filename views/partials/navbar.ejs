@@ -19,12 +19,12 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/products">
+                      <a class="nav-link" href="/client/shop">
             <i class="fas fa-box me-1"></i>Products
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/client/shop-simple">
+                      <a class="nav-link" href="/client/shop">
             <i class="fas fa-shopping-bag me-1"></i>Shop
           </a>
         </li>
@@ -35,11 +35,11 @@
           <ul class="dropdown-menu">
             <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
               <% categories.forEach(category => { %>
-                <li><a class="dropdown-item" href="/listings?category=<%= category %>"><%= category %></a></li>
+                <li><a class="dropdown-item" href="/client/category/<%= category %>"><%= category %></a></li>
               <% }); %>
             <li><hr class="dropdown-divider"></li>
             <% } %>
-            <li><a class="dropdown-item" href="/listings">All Categories</a></li>
+                          <li><a class="dropdown-item" href="/client/shop">All Categories</a></li>
           </ul>
         </li>
         <li class="nav-item">
@@ -50,7 +50,7 @@
       </ul>
 
       <!-- Search form -->
-      <form class="d-flex me-3" action="/listings" method="GET">
+              <form class="d-flex me-3" action="/client/shop" method="GET">
         <div class="search-container">
           <input class="search-input" type="search" name="search" placeholder="Search products..." 
                  value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
@@ -64,7 +64,7 @@
       <ul class="navbar-nav">
         <!-- Shopping Cart -->
         <li class="nav-item">
-          <a class="nav-link position-relative" href="/client/cart-simple">
+                      <a class="nav-link position-relative" href="/client/cart">
             <i class="fas fa-shopping-cart"></i>
             <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -84,7 +84,7 @@
               <li><a class="dropdown-item" href="/users/profile">
                 <i class="fas fa-user me-2"></i>Profile
               </a></li>
-              <li><a class="dropdown-item" href="/orders/my-orders">
+              <li><a class="dropdown-item" href="/users/orders">
                 <i class="fas fa-shopping-bag me-2"></i>My Orders
               </a></li>
               <% if (currentUser.role === 'admin') { %>
@@ -103,12 +103,12 @@
           </li>
         <% } else { %>
           <li class="nav-item">
-            <a class="nav-link" href="/login">
+            <a class="nav-link" href="/users/login">
               <i class="fas fa-sign-in-alt me-1"></i>Login
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/register">
+            <a class="nav-link" href="/users/register">
               <i class="fas fa-user-plus me-1"></i>Register
             </a>
           </li>

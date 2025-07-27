@@ -15,7 +15,7 @@ const upload = multer({ storage })
 // @access  Private
 router.get("/profile", protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("wishlist")
+    const user = await User.findById(req.user._id)
 
     res.json({
       success: true,
@@ -101,53 +101,6 @@ router.put("/password", protect, async (req, res) => {
     })
   } catch (error) {
     console.error("Change password error:", error)
-    res.status(500).json({ message: "Server error" })
-  }
-})
-
-// @desc    Add to wishlist
-// @route   POST /api/users/wishlist/:productId
-// @access  Private
-router.post("/wishlist/:productId", protect, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id)
-    const productId = req.params.productId
-
-    // Check if product is already in wishlist
-    if (user.wishlist.includes(productId)) {
-      return res.status(400).json({ message: "Product already in wishlist" })
-    }
-
-    user.wishlist.push(productId)
-    await user.save()
-
-    res.json({
-      success: true,
-      message: "Product added to wishlist",
-    })
-  } catch (error) {
-    console.error("Add to wishlist error:", error)
-    res.status(500).json({ message: "Server error" })
-  }
-})
-
-// @desc    Remove from wishlist
-// @route   DELETE /api/users/wishlist/:productId
-// @access  Private
-router.delete("/wishlist/:productId", protect, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id)
-    const productId = req.params.productId
-
-    user.wishlist = user.wishlist.filter((id) => id.toString() !== productId)
-    await user.save()
-
-    res.json({
-      success: true,
-      message: "Product removed from wishlist",
-    })
-  } catch (error) {
-    console.error("Remove from wishlist error:", error)
     res.status(500).json({ message: "Server error" })
   }
 })

@@ -84,11 +84,11 @@ class EmailService {
           console.warn(`[EMAIL] ${message}`, logData)
           break
         case 'info':
-          console.log(`[EMAIL] ${message}`, logData)
+          // Email logging handled by service
           break
         case 'debug':
           if (this.emailConfig.logging.level === 'debug') {
-            console.log(`[EMAIL DEBUG] ${message}`, logData)
+            // Email debug logging handled by service
           }
           break
       }
@@ -181,7 +181,7 @@ class EmailService {
     }
 
     try {
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: this.emailConfig.host,
         port: this.emailConfig.port,
         secure: this.emailConfig.secure,

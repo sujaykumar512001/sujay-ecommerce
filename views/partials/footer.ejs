@@ -39,12 +39,12 @@
                     <div class="footer-section">
                         <h5 class="footer-title">Quick Links</h5>
                         <ul class="footer-links">
-                            <li><a href="/products?category=women">Women</a></li>
-                            <li><a href="/products?category=men">Men</a></li>
-                            <li><a href="/products?category=kids">Kids</a></li>
-                            <li><a href="/products?category=paintings">Paintings</a></li>
-                            <li><a href="/products">Shop</a></li>
-                            <li><a href="/products?category=new-arrivals">New Arrivals</a></li>
+                            <li><a href="/client/category/women">Women</a></li>
+                            <li><a href="/client/category/men">Men</a></li>
+                            <li><a href="/client/category/kids">Kids</a></li>
+                            <li><a href="/client/category/paintings">Paintings</a></li>
+                            <li><a href="/client/shop">Shop</a></li>
+                            <li><a href="/client/new-arrivals">New Arrivals</a></li>
                         </ul>
                     </div>
                 </div>
@@ -54,7 +54,6 @@
                     <div class="footer-section">
                         <h5 class="footer-title">Customer Service</h5>
                         <ul class="footer-links">
-    
                             <li><a href="/faqs">FAQs</a></li>
                             <li><a href="/shipping-returns">Shipping & Returns</a></li>
                             <li><a href="/track-order">Track Order</a></li>
@@ -95,16 +94,4 @@
                 </div>
             </div>
         </div>
-    </footer>
-    
-    <!-- Load universal script.js on all pages -->
-<script src="/js/script.js?v=<%= Date.now() %>&v6=force-refresh"></script>
-    
-    <!-- Load navigation scripts only on pages that need them -->
-    <% if (typeof title === 'undefined' || !title || (title !== 'Login' && title !== 'Register')) { %>
-        <!-- Only load navigation scripts on non-auth pages -->
-        <script src="/js/auth-navigation.js?v=<%= Date.now() %>&v7=final-clean"></script>
-        <script src="/js/simple-navigation.js?v=<%= Date.now() %>&v7=final-clean"></script>
-    <% } %>
-</body>
-</html> 
+    </footer> 

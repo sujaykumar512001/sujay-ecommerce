@@ -1,552 +1,806 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deals & Offers - Yadav Collection</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/CSS/style.css">
-    
-    <!-- Fallback Inline CSS -->
-    <style>
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
+<!-- Deals Header -->
+<section class="deals-header">
+    <div class="container">
+        <div class="deals-hero">
+            <h1 class="deals-title">🔥 Hot Deals & Offers</h1>
+            <p class="deals-subtitle">Limited time offers on premium fashion and handmade art</p>
+            <div class="deals-countdown">
+                <h4>Offer Ends In:</h4>
+                <div class="countdown-grid">
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="days">00</span>
+                        <span class="countdown-label">Days</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="hours">00</span>
+                        <span class="countdown-label">Hours</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="minutes">00</span>
+                        <span class="countdown-label">Minutes</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="seconds">00</span>
+                        <span class="countdown-label">Seconds</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters Section -->
+<section class="filters-section">
+    <div class="container">
+        <form method="GET" action="/client/deals" class="filters-form">
+            <div class="row g-3">
+                <div class="col-lg-3 col-md-6">
+                    <div class="filter-card">
+                        <h5 class="filter-title">
+                            <i class="fas fa-search me-2"></i>Search
+                        </h5>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               placeholder="Search deals..." 
+                               value="<%= typeof currentSearch !== 'undefined' ? currentSearch : '' %>">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="filter-card">
+                        <h5 class="filter-title">
+                            <i class="fas fa-tags me-2"></i>Category
+                        </h5>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category %>" 
+                                            <%= (typeof currentCategory !== 'undefined' && currentCategory === category) ? 'selected' : '' %>>
+                                        <%= category %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="filter-card">
+                        <h5 class="filter-title">
+                            <i class="fas fa-percentage me-2"></i>Discount Range
+                        </h5>
+                        <select class="form-select" id="discount" name="discount">
+                            <option value="">Any Discount</option>
+                            <option value="10" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '10') ? 'selected' : '' %>>10% or more</option>
+                            <option value="20" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '20') ? 'selected' : '' %>>20% or more</option>
+                            <option value="30" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '30') ? 'selected' : '' %>>30% or more</option>
+                            <option value="50" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '50') ? 'selected' : '' %>>50% or more</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="filter-card">
+                        <h5 class="filter-title">
+                            <i class="fas fa-sort me-2"></i>Sort By
+                        </h5>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="">Best Deals First</option>
+                            <option value="discount_desc" <%= (typeof currentSort !== 'undefined' && currentSort === 'discount_desc') ? 'selected' : '' %>>Highest Discount</option>
+                            <option value="price_asc" <%= (typeof currentSort !== 'undefined' && currentSort === 'price_asc') ? 'selected' : '' %>>Price: Low to High</option>
+                            <option value="price_desc" <%= (typeof currentSort !== 'undefined' && currentSort === 'price_desc') ? 'selected' : '' %>>Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-search me-2"></i>Apply Filters
+                    </button>
+                    <a href="/client/deals" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>Clear All
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="products-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="results-header">
+                    <h3 class="results-title">
+                        <i class="fas fa-fire me-2"></i>Hot Deals
+                    </h3>
+                    <p class="results-count">
+                        Showing <strong><%= typeof totalProducts !== 'undefined' ? totalProducts : 0 %></strong> amazing deals
+                    </p>
+                </div>
+            </div>
+        </div>
         
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        <div class="row g-4">
+            <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                <% products.forEach(product => { %>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card deal-card">
+                            <div class="product-image">
+                                <img src="<%= product.image %>" alt="<%= product.name %>" class="img-fluid">
+                                <div class="product-overlay">
+                                    <a href="/client/product/<%= product._id || product.id %>" class="btn btn-primary">
+                                        <i class="fas fa-eye me-2"></i>View Details
+                                    </a>
+                                </div>
+                                <div class="discount-badge">
+                                    <i class="fas fa-fire"></i>
+                                    <%= product.discount || 20 %>% OFF
+                                </div>
+                                <div class="deal-timer">
+                                    <i class="fas fa-clock"></i> Limited Time
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <h5 class="product-title"><%= product.name %></h5>
+                                <p class="product-category">
+                                    <i class="fas fa-tag me-1"></i><%= product.category %>
+                                </p>
+                                <div class="product-price">
+                                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                        <span class="original-price">₹<%= product.originalPrice %></span>
+                                        <span class="current-price">₹<%= product.price %></span>
+                                        <span class="savings">
+                                            <i class="fas fa-tag me-1"></i>Save ₹<%= (product.originalPrice - product.price).toFixed(0) %>
+                                        </span>
+                                    <% } else if (product.discount && product.discount > 0) { %>
+                                        <% const originalPrice = (product.price / (1 - product.discount / 100)).toFixed(0) %>
+                                        <span class="original-price">₹<%= originalPrice %></span>
+                                        <span class="current-price">₹<%= product.price %></span>
+                                        <span class="savings">
+                                            <i class="fas fa-tag me-1"></i>Save ₹<%= (originalPrice - product.price).toFixed(0) %>
+                                        </span>
+                                    <% } else { %>
+                                        <% const originalPrice = (product.price * 1.2).toFixed(0) %>
+                                        <span class="original-price">₹<%= originalPrice %></span>
+                                        <span class="current-price">₹<%= product.price %></span>
+                                        <span class="savings">
+                                            <i class="fas fa-tag me-1"></i>Save ₹<%= (originalPrice - product.price).toFixed(0) %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <div class="product-rating">
+                                    <div class="stars">
+                                        <% for(let i = 0; i < 5; i++) { %>
+                                            <% if (i < (product.rating || 0)) { %>
+                                                <i class="fas fa-star text-warning"></i>
+                                            <% } else { %>
+                                                <i class="far fa-star text-muted"></i>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                    <span class="rating-count">(<%= product.reviewCount || 0 %>)</span>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-primary btn-sm add-to-cart-btn" data-product-id="<%= product._id || product.id %>">
+                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="no-deals">
+                        <div class="no-deals-icon">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        <h4>No Deals Found</h4>
+                        <p class="text-muted">Check back later for amazing deals and offers!</p>
+                        <a href="/client/shop" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>Browse All Products
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
         
-        .navbar-brand {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white !important;
-            text-decoration: none;
-        }
-        
-        .deals-header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-            padding: 80px 0;
-            text-align: center;
-        }
-        
+        <!-- Pagination -->
+        <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+            <div class="row mt-5">
+                <div class="col-12">
+                    <nav aria-label="Deals pagination">
+                        <ul class="pagination justify-content-center">
+                            <% if (page > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/client/deals?page=<%= page - 1 %><%= currentSearch ? '&search=' + currentSearch : '' %><%= currentCategory ? '&category=' + currentCategory : '' %>">
+                                        <i class="fas fa-chevron-left"></i> Previous
+                                    </a>
+                                </li>
+                            <% } %>
+                            
+                            <% for(let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= i === page ? 'active' : '' %>">
+                                    <a class="page-link" href="/client/deals?page=<%= i %><%= currentSearch ? '&search=' + currentSearch : '' %><%= currentCategory ? '&category=' + currentCategory : '' %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } %>
+                            
+                            <% if (page < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/client/deals?page=<%= page + 1 %><%= currentSearch ? '&search=' + currentSearch : '' %><%= currentCategory ? '&category=' + currentCategory : '' %>">
+                                        Next <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Deals Page Specific CSS -->
+<style>
+    /* Deals Header */
+    .deals-header {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 50%, #ff8c42 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .deals-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .deals-hero {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .deals-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        animation: pulse 2s infinite;
+    }
+    
+    .deals-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        margin-bottom: 3rem;
+        font-weight: 300;
+    }
+    
+    .deals-countdown {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .deals-countdown h4 {
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .countdown-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1.5rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .countdown-item {
+        text-align: center;
+        background: rgba(255,255,255,0.15);
+        padding: 1.5rem 1rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: transform 0.3s ease;
+    }
+    
+    .countdown-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .countdown-number {
+        display: block;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #ffd700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        line-height: 1;
+    }
+    
+    .countdown-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    /* Filters Section */
+    .filters-section {
+        background: white;
+        padding: 40px 0;
+        border-bottom: 1px solid #eee;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .filters-form {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .filter-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .filter-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .filter-title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+    }
+    
+    /* Products Section */
+    .products-section {
+        padding: 60px 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 60vh;
+    }
+    
+    .results-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .results-title {
+        color: #333;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+    
+    .results-count {
+        color: #666;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    /* Product Cards */
+    .deal-card {
+        position: relative;
+        border: 3px solid #ff6b6b;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+    
+    .deal-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        border-color: #ee5a24;
+    }
+    
+    .product-image {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    
+    .deal-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+    
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .deal-card:hover .product-overlay {
+        opacity: 1;
+    }
+    
+    .discount-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        z-index: 2;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        animation: pulse 2s infinite;
+    }
+    
+    .deal-timer {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        background: rgba(0,0,0,0.9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        z-index: 2;
+        backdrop-filter: blur(10px);
+    }
+    
+    .product-info {
+        padding: 2rem;
+    }
+    
+    .product-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #333;
+        line-height: 1.4;
+        height: 3.4rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .product-category {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+    
+    .product-price {
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .current-price {
+        color: #ff6b6b;
+        font-weight: 800;
+        font-size: 1.5rem;
+    }
+    
+    .savings {
+        color: #28a745;
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 10px;
+        display: inline-block;
+    }
+    
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stars {
+        display: flex;
+        gap: 0.1rem;
+    }
+    
+    .rating-count {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .product-actions .btn {
+        flex: 1;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 0.75rem;
+    }
+    
+    /* No Deals */
+    .no-deals {
+        text-align: center;
+        padding: 4rem 0;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .no-deals-icon {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 2rem;
+    }
+    
+    .no-deals h4 {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    /* Pagination */
+    .pagination {
+        gap: 0.5rem;
+    }
+    
+    .page-link {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        color: #333;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .page-link:hover {
+        background: #ff6b6b;
+        border-color: #ff6b6b;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .page-item.active .page-link {
+        background: #ff6b6b;
+        border-color: #ff6b6b;
+        color: white;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
         .deals-title {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
         }
         
         .deals-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
+            font-size: 1.1rem;
         }
         
-        .deals-countdown {
-            background: rgba(255,255,255,0.2);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 2rem;
+        .countdown-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
         
         .countdown-item {
-            display: inline-block;
-            margin: 0 15px;
-            text-align: center;
+            padding: 1rem 0.5rem;
         }
         
         .countdown-number {
             font-size: 2rem;
-            font-weight: bold;
-            display: block;
         }
         
-        .countdown-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .filters-section {
-            background: white;
-            padding: 30px 0;
-            border-bottom: 1px solid #eee;
+        .filters-form {
+            padding: 1.5rem;
         }
         
         .filter-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
         
-        .filter-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
+        .product-actions {
+            flex-direction: column;
         }
         
-        .form-select, .form-control {
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 10px 15px;
+        .results-header {
+            padding: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .deals-header {
+            padding: 60px 0;
         }
         
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
+        .deals-title {
+            font-size: 2rem;
         }
         
-        .btn-primary {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-        }
-        
-        .btn-outline-secondary {
-            background: transparent;
-            color: #6c757d;
-            border: 1px solid #6c757d;
-        }
-        
-        .products-section {
-            padding: 40px 0;
-            background: #f8f9fa;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 2rem;
-            height: 100%;
-            position: relative;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .discount-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff6b6b;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            z-index: 10;
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
+        .countdown-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
         
         .product-info {
             padding: 1.5rem;
         }
-        
-        .product-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        
-        .product-price {
-            margin-bottom: 1rem;
-        }
-        
-        .original-price {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 1rem;
-            margin-right: 10px;
-        }
-        
-        .sale-price {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #ff6b6b;
-        }
-        
-        .product-category {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .product-rating {
-            margin-bottom: 1rem;
-        }
-        
-        .stars {
-            color: #ffc107;
-        }
-        
-        .rating-text {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .pagination {
-            justify-content: center;
-            margin-top: 2rem;
-        }
-        
-        .page-link {
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-            margin: 0 2px;
-        }
-        
-        .page-item.active .page-link {
-            background-color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-        
-        .footer {
-            background: #333;
-            color: white;
-            padding: 60px 0 20px;
-        }
-        
-        .footer-section {
-            margin-bottom: 2rem;
-        }
-        
-        .footer-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: white;
-        }
-        
-        .footer-links {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .footer-links li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .footer-links a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-        }
-        
-        .footer-bottom {
-            border-top: 1px solid #555;
-            padding-top: 20px;
-            text-align: center;
-            color: #ccc;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <span class="fw-bold fs-4 text-white">Yadav Collection</span>
-                <span class="small text-light opacity-75">Premium Fashion & Handmade Art</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/client/shop">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white active" href="/client/deals">Deals</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/about">About</a>
-                    </li>
-                    <% if (typeof user !== 'undefined' && user) { %>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-2"></i><%= user.firstName || user.name || 'Profile' %>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/users/profile">My Profile</a></li>
-                                <li><a class="dropdown-item" href="/users/orders">My Orders</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/users/logout">Logout</a></li>
-                            </ul>
-                        </li>
-                    <% } else { %>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/users/login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/users/register">Register</a>
-                        </li>
-                    <% } %>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    }
+</style>
 
-    <!-- Deals Header -->
-    <section class="deals-header">
-        <div class="container">
-            <h1 class="deals-title">🔥 Hot Deals & Offers</h1>
-            <p class="deals-subtitle">Limited time offers on premium fashion and handmade art</p>
-            
-            <div class="deals-countdown">
-                <h4>Offer Ends In:</h4>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="days">00</span>
-                    <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="hours">00</span>
-                    <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="minutes">00</span>
-                    <span class="countdown-label">Minutes</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="seconds">00</span>
-                    <span class="countdown-label">Seconds</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Filters Section -->
-    <section class="filters-section">
-        <div class="container">
-            <form method="GET" action="/client/deals">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="filter-card">
-                            <h5 class="filter-title">Search</h5>
-                            <input type="text" class="form-control" id="search" name="search" 
-                                   placeholder="Search deals..." 
-                                   value="<%= typeof currentSearch !== 'undefined' ? currentSearch : '' %>">
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="filter-card">
-                            <h5 class="filter-title">Category</h5>
-                            <select class="form-select" id="category" name="category">
-                                <option value="">All Categories</option>
-                                <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
-                                    <% categories.forEach(category => { %>
-                                        <option value="<%= category %>" 
-                                                <%= (typeof currentCategory !== 'undefined' && currentCategory === category) ? 'selected' : '' %>>
-                                            <%= category %>
-                                        </option>
-                                    <% }); %>
-                                <% } %>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="filter-card">
-                            <h5 class="filter-title">Discount Range</h5>
-                            <select class="form-select" id="discount" name="discount">
-                                <option value="">Any Discount</option>
-                                <option value="10" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '10') ? 'selected' : '' %>>10% or more</option>
-                                <option value="20" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '20') ? 'selected' : '' %>>20% or more</option>
-                                <option value="30" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '30') ? 'selected' : '' %>>30% or more</option>
-                                <option value="50" <%= (typeof currentDiscount !== 'undefined' && currentDiscount === '50') ? 'selected' : '' %>>50% or more</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="filter-card">
-                            <h5 class="filter-title">Sort By</h5>
-                            <select class="form-select" id="sort" name="sort">
-                                <option value="">Best Deals First</option>
-                                <option value="discount_desc" <%= (typeof currentSort !== 'undefined' && currentSort === 'discount_desc') ? 'selected' : '' %>>Highest Discount</option>
-                                <option value="price_asc" <%= (typeof currentSort !== 'undefined' && currentSort === 'price_asc') ? 'selected' : '' %>>Price: Low to High</option>
-                                <option value="price_desc" <%= (typeof currentSort !== 'undefined' && currentSort === 'price_desc') ? 'selected' : '' %>>Price: High to Low</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-primary me-2">
-                            <i class="fas fa-search me-2"></i>Apply Filters
-                        </button>
-                        <a href="/client/deals" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Clear All
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <!-- Products Section -->
-    <section class="products-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-muted mb-4">
-                        Showing <%= typeof totalProducts !== 'undefined' ? totalProducts : 0 %> deals
-                        <% if (typeof currentSearch !== 'undefined' && currentSearch) { %>
-                            for "<%= currentSearch %>"
-                        <% } %>
-                    </p>
-                </div>
-            </div>
-            
-            <div class="row">
-                <% if (typeof products !== 'undefined' && products && products.length > 0) { %>
-                    <% products.forEach(product => { %>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product-card">
-                                <% if (product.discountPercentage && product.discountPercentage > 0) { %>
-                                    <div class="discount-badge">-<%= product.discountPercentage %>% OFF</div>
-                                <% } %>
-                                <img src="<%= product.images && product.images[0] ? product.images[0] : '/placeholder.svg' %>" 
-                                     class="product-image" alt="<%= product.name %>">
-                                <div class="product-info">
-                                    <h5 class="product-title">
-                                        <a href="/client/product/<%= product._id %>" class="text-decoration-none">
-                                            <%= product.name %>
-                                        </a>
-                                    </h5>
-                                    <p class="product-category">
-                                        <i class="fas fa-tag me-1"></i><%= product.category || 'Uncategorized' %>
-                                    </p>
-                                    <div class="product-price">
-                                        <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                                            <span class="original-price">$<%= product.originalPrice %></span>
-                                        <% } %>
-                                        <span class="sale-price">$<%= product.price %></span>
-                                    </div>
-                                    
-                                    <% if (product.rating) { %>
-                                        <div class="product-rating">
-                                            <div class="stars">
-                                                <% for (let i = 1; i <= 5; i++) { %>
-                                                    <i class="fas fa-star <%= i <= product.rating ? 'text-warning' : 'text-muted' %>"></i>
-                                                <% } %>
-                                            </div>
-                                            <small class="rating-text">(<%= product.rating %>/5)</small>
-                                        </div>
-                                    <% } %>
-                                    
-                                    <a href="/client/product/<%= product._id %>" class="btn btn-primary w-100">View Deal</a>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <div class="py-5">
-                            <i class="fas fa-fire fa-3x text-muted mb-3"></i>
-                            <h3>No Deals Found</h3>
-                            <p class="text-muted">Check back later for amazing deals and offers!</p>
-                            <a href="/client/shop" class="btn btn-primary">Browse All Products</a>
-                        </div>
-                    </div>
-                <% } %>
-            </div>
-            
-            <!-- Pagination -->
-            <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
-                <nav aria-label="Deals pagination">
-                    <ul class="pagination">
-                        <% for (let i = 1; i <= totalPages; i++) { %>
-                            <li class="page-item <%= (typeof currentPage !== 'undefined' && currentPage == i) ? 'active' : '' %>">
-                                <a class="page-link" href="/client/deals?page=<%= i %><%= typeof currentSearch !== 'undefined' && currentSearch ? '&search=' + currentSearch : '' %><%= typeof currentCategory !== 'undefined' && currentCategory ? '&category=' + currentCategory : '' %><%= typeof currentSort !== 'undefined' && currentSort ? '&sort=' + currentSort : '' %>">
-                                    <%= i %>
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
-                </nav>
-            <% } %>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <%- include('../partials/footer') %>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Deals Page JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Countdown timer
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 7); // 7 days from now
+        const distance = endDate.getTime() - now;
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = days.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+    }
     
-    <!-- Countdown Timer -->
-    <script>
-        // Set the countdown date (7 days from now)
-        const countdownDate = new Date();
-        countdownDate.setDate(countdownDate.getDate() + 7);
-        
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = countdownDate.getTime() - now;
+    // Update countdown every second
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    
+    // Add to cart functionality
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
             
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Show loading state
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+            this.disabled = true;
             
-            document.getElementById('days').textContent = days.toString().padStart(2, '0');
-            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-            
-            if (distance < 0) {
-                clearInterval(countdownInterval);
-                document.querySelector('.deals-countdown').innerHTML = '<h4>Deals Expired!</h4>';
+            // Add to cart API call
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    this.innerHTML = '<i class="fas fa-check me-2"></i>Added!';
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-success');
+                    
+                    // Update cart count if available
+                    const cartCount = document.querySelector('.cart-count');
+                    if (cartCount) {
+                        const currentCount = parseInt(cartCount.textContent) || 0;
+                        cartCount.textContent = currentCount + 1;
+                    }
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('btn-success');
+                        this.classList.add('btn-primary');
+                        this.disabled = false;
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Failed to add to cart');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-danger');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-danger');
+                    this.classList.add('btn-primary');
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+    });
+    
+    // Add smooth animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
             }
-        }
-        
-        updateCountdown();
-        const countdownInterval = setInterval(updateCountdown, 1000);
-    </script>
-</body>
-</html> 
+        });
+    }, observerOptions);
+    
+    // Observe all product cards
+    document.querySelectorAll('.deal-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>

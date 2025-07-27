@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title + ' - Admin Panel' : 'Admin Panel - Yadav Collection' %></title>
+    
+    <!-- Admin-specific meta tags -->
+    <meta name="description" content="Admin Panel - Yadav Collection E-commerce Management">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#343a40">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Admin-specific CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .admin-header {
+            background: #343a40;
+            color: white;
+            padding: 1rem 0;
+            border-bottom: 1px solid #495057;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+        
+        .admin-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .admin-brand:hover {
+            color: #adb5bd;
+        }
+        
+        .admin-user-info {
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+        
+        .admin-container {
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+        
+        .admin-sidebar {
+            background: #343a40;
+            min-height: calc(100vh - 80px);
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 250px;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        
+        .admin-sidebar .nav-link {
+            color: #adb5bd;
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .admin-sidebar .nav-link:hover {
+            color: white;
+            background-color: #495057;
+            border-left-color: #007bff;
+            text-decoration: none;
+        }
+        
+        .admin-sidebar .nav-link.active {
+            color: white;
+            background-color: #495057;
+            border-left-color: #007bff;
+        }
+        
+        .admin-main {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-card-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem 1.5rem;
+        }
+        
+        .admin-stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .admin-stats-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-stats-card .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .admin-stats-card .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .badge {
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                position: static;
+                width: 100%;
+                min-height: auto;
+                margin-bottom: 1rem;
+            }
+            
+            .admin-main {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .admin-header {
+                position: relative;
+            }
+            
+            .admin-container {
+                padding-top: 0;
+            }
+        }
+        
+        /* Hide any client-side elements that might leak through */
+        .navbar, .footer, .client-nav, .shopping-cart, .wishlist {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <a href="/admin" class="admin-brand">
+                        <i class="fas fa-shield-alt me-2"></i>Admin Panel
+                    </a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="admin-user-info">
+                        <i class="fas fa-user me-1"></i>
+                        Welcome, <%= user ? (user.firstName || user.name || 'Admin') : 'Admin' %>
+                        <button onclick="handleAdminLogout()" class="btn btn-outline-light btn-sm ms-2">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <nav class="admin-sidebar">
+            <div class="pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>" href="/admin">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'products' ? 'active' : '' %>" href="/admin/products">
+                            <i class="fas fa-box me-2"></i>
+                            Product Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'orders' ? 'active' : '' %>" href="/admin/orders">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Order Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'users' ? 'active' : '' %>" href="/admin/users">
+                            <i class="fas fa-users me-2"></i>
+                            User Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'analytics' ? 'active' : '' %>" href="/admin/analytics">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Analytics & Reports
+                        </a>
+                    </li>
+                    <li class="nav-item mt-4">
+                        <hr class="text-muted">
+                        <a class="nav-link text-warning" href="#" onclick="handleAdminLogout(); return false;">
+                            <i class="fas fa-sign-out-alt me-2"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Admin Main Content -->
+        <main class="admin-main">
+            <%- body %>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Admin-specific scripts -->
+    <script>
+        // Admin-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current page in sidebar
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.admin-sidebar .nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.style.transition = 'opacity 0.5s';
+                        alert.style.opacity = '0';
+                        setTimeout(() => alert.remove(), 500);
+                    }
+                }, 5000);
+            });
+            
+            // Force hide any client-side elements that might appear
+            const clientElements = document.querySelectorAll('.navbar, .footer, .client-nav, .shopping-cart, .wishlist, .newsletter');
+            clientElements.forEach(element => {
+                element.style.display = 'none';
+            });
+        });
+        
+        // Additional security: prevent any client-side scripts from running
+        window.addEventListener('load', function() {
+            // Remove any client-side navigation elements
+            const clientNavs = document.querySelectorAll('nav:not(.admin-sidebar), .navbar, .client-navigation');
+            clientNavs.forEach(nav => {
+                if (!nav.classList.contains('admin-sidebar')) {
+                    nav.remove();
+                }
+            });
+        });
+        
+        // Admin logout handler
+        function handleAdminLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/admin/logout', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Create a modal to display the JSON response
+                    const modal = document.createElement('div');
+                    modal.className = 'modal fade';
+                    modal.id = 'logoutResponseModal';
+                    modal.innerHTML = `
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Logout Response</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-size: 14px;">${JSON.stringify(data, null, 2)}</pre>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" onclick="window.location.href='/admin/login'">
+                                        Go to Login
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(modal);
+                    const bootstrapModal = new bootstrap.Modal(modal);
+                    bootstrapModal.show();
+                    
+                    // Remove modal from DOM after it's hidden
+                    modal.addEventListener('hidden.bs.modal', function() {
+                        document.body.removeChild(modal);
+                        window.location.href = '/admin/login';
+                    });
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html> 

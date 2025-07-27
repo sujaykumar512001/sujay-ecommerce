@@ -73,7 +73,7 @@ const createTransporter = () => {
     }
   };
 
-  return nodemailer.createTransporter(emailConfig);
+  return nodemailer.createTransport(emailConfig);
 };
 
 /**
@@ -98,7 +98,7 @@ const sendEmail = async (options) => {
     };
 
     const result = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', result.messageId);
+    // Email sent successfully - logged by service
     return result;
   } catch (error) {
     console.error('Email send error:', error);

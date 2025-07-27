@@ -136,11 +136,11 @@ const logValidation = (level, message, data = {}) => {
       console.warn(`[VALIDATION] ${message}`, logData);
       break;
     case 'info':
-      console.log(`[VALIDATION] ${message}`, logData);
+      // Validation logging handled by service
       break;
     case 'debug':
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[VALIDATION] ${message}`, logData);
+        // Validation logging handled by service
       }
       break;
   }

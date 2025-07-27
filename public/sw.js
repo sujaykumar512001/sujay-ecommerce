@@ -1,4 +1,5 @@
-// Basic Service Worker
+// Basic Service Worker - TEMPORARILY DISABLED
+/*
 const CACHE_NAME = 'ecommerce-v1';
 const urlsToCache = [
   '/',
@@ -20,4 +21,5 @@ self.addEventListener('fetch', (event) => {
         return response || fetch(event.request);
       })
   );
-}); 
+});
+*/ 

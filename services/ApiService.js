@@ -72,11 +72,11 @@ class ApiService {
         console.warn(`[API] ${message}`, logData)
         break
       case 'info':
-        console.log(`[API] ${message}`, logData)
+        // API logging handled by service
         break
       case 'debug':
         if (this.config.logging.level === 'debug') {
-          console.log(`[API DEBUG] ${message}`, logData)
+          // API debug logging handled by service
         }
         break
     }

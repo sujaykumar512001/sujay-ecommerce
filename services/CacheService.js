@@ -70,11 +70,11 @@ class CacheService {
         console.warn(`[CACHE] ${message}`, logData)
         break
       case 'info':
-        console.log(`[CACHE] ${message}`, logData)
+        // Cache logging handled by service
         break
       case 'debug':
         if (this.config.logging.level === 'debug') {
-          console.log(`[CACHE DEBUG] ${message}`, logData)
+          // Cache debug logging handled by service
         }
         break
     }
@@ -569,7 +569,7 @@ const cacheService = new CacheService()
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('Closing cache connections...')
+  // Closing cache connections...
   await cacheService.close()
   process.exit(0)
 })

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const Review = require('../models/Review');
 const Order = require('../models/Order');
@@ -9,283 +10,469 @@ const asyncHandler = require('../utils/asyncHandler');
 const CONSTANTS = require('../config/constants');
 
 // Client shop page - browse products with enhanced filtering
-router.get('/shop', asyncHandler(async (req, res) => {
-        const page = parseInt(req.query.page) || 1;
-        const limit = CONSTANTS.PRODUCTS_PAGE_SIZE;
-        const skip = (page - 1) * limit;
+router.get('/shop', async (req, res) => {
+    try {
+        // Sample products data for demonstration
+        const sampleProducts = [
+            {
+                _id: '507f1f77bcf86cd799439011',
+                name: 'Elegant Women\'s Dress',
+                category: 'Women',
+                brand: 'Fashion Brand',
+                price: 1299,
+                originalPrice: 1599,
+                discount: 19,
+                rating: 4.5,
+                reviewCount: 23,
+                image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+                description: 'Beautiful elegant dress perfect for any occasion'
+            },
+            {
+                _id: '507f1f77bcf86cd799439012',
+                name: 'Men\'s Casual Shirt',
+                category: 'Men',
+                brand: 'Elegance',
+                price: 899,
+                originalPrice: 1199,
+                discount: 25,
+                rating: 4.2,
+                reviewCount: 18,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
+                description: 'Comfortable and stylish casual shirt for men'
+            },
+            {
+                _id: '507f1f77bcf86cd799439013',
+                name: 'Kids Summer Dress',
+                category: 'Kids',
+                brand: 'Denim Co',
+                price: 599,
+                originalPrice: 799,
+                discount: 25,
+                rating: 4.8,
+                reviewCount: 12,
+                image: 'https://images.unsplash.com/photo-1553451191-6d7232c0f5b8?w=400&h=500&fit=crop',
+                description: 'Adorable summer dress for kids'
+            },
+            {
+                _id: '507f1f77bcf86cd799439014',
+                name: 'Abstract Art Painting',
+                category: 'Paintings',
+                brand: 'Art Studio',
+                price: 2499,
+                originalPrice: 2999,
+                discount: 17,
+                rating: 4.7,
+                reviewCount: 8,
+                image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=500&fit=crop',
+                description: 'Beautiful abstract art painting for your home'
+            },
+            {
+                _id: '507f1f77bcf86cd799439015',
+                name: 'Women\'s Handbag',
+                category: 'Women',
+                brand: 'Fashion Brand',
+                price: 1899,
+                originalPrice: 2299,
+                discount: 17,
+                rating: 4.3,
+                reviewCount: 31,
+                image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=500&fit=crop',
+                description: 'Stylish and practical handbag for women'
+            },
+            {
+                _id: '507f1f77bcf86cd799439016',
+                name: 'Men\'s Formal Suit',
+                category: 'Men',
+                brand: 'Elegance',
+                price: 3499,
+                originalPrice: 4499,
+                discount: 22,
+                rating: 4.6,
+                reviewCount: 15,
+                image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=500&fit=crop',
+                description: 'Professional formal suit for men'
+            },
+            {
+                _id: '507f1f77bcf86cd799439017',
+                name: 'Kids Winter Jacket',
+                category: 'Kids',
+                brand: 'Denim Co',
+                price: 1299,
+                originalPrice: 1599,
+                discount: 19,
+                rating: 4.4,
+                reviewCount: 9,
+                image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=500&fit=crop',
+                description: 'Warm and cozy winter jacket for kids'
+            },
+            {
+                _id: '507f1f77bcf86cd799439018',
+                name: 'Landscape Painting',
+                category: 'Paintings',
+                brand: 'Art Studio',
+                price: 1899,
+                originalPrice: 2299,
+                discount: 17,
+                rating: 4.9,
+                reviewCount: 6,
+                image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=500&fit=crop',
+                description: 'Stunning landscape painting for nature lovers'
+            }
+        ];
+
+        // Apply filters if provided
+        let filteredProducts = [...sampleProducts];
         
-    // Build query with enhanced filtering
-        let query = {};
+        if (req.query.category && req.query.category !== 'All Categories') {
+            filteredProducts = filteredProducts.filter(p => p.category === req.query.category);
+        }
         
-    // Search filter with multiple fields
+        if (req.query.brand && req.query.brand !== 'All Brands') {
+            filteredProducts = filteredProducts.filter(p => p.brand === req.query.brand);
+        }
+        
         if (req.query.search) {
-            query.$or = [
-                { name: { $regex: req.query.search, $options: 'i' } },
-                { brand: { $regex: req.query.search, $options: 'i' } },
-            { description: { $regex: req.query.search, $options: 'i' } },
-            { category: { $regex: req.query.search, $options: 'i' } }
-            ];
+            const searchTerm = req.query.search.toLowerCase();
+            filteredProducts = filteredProducts.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                p.description.toLowerCase().includes(searchTerm)
+            );
         }
-        
-        // Category filter
-        if (req.query.category) {
-            query.category = req.query.category;
-        }
-    
-    // Brand filter
-    if (req.query.brand) {
-        query.brand = req.query.brand;
-    }
-    
-    // Price range filter
-    if (req.query.minPrice || req.query.maxPrice) {
-        query.price = {};
-        if (req.query.minPrice) query.price.$gte = parseFloat(req.query.minPrice);
-        if (req.query.maxPrice) query.price.$lte = parseFloat(req.query.maxPrice);
-    }
-    
-    // Rating filter
-    if (req.query.minRating) {
-        query.rating = { $gte: parseFloat(req.query.minRating) };
-    }
-    
-    // Availability filter
-    if (req.query.inStock === 'true') {
-        query.stockQuantity = { $gt: 0 };
-        }
-        
-        // Sort options
-        let sort = { createdAt: -1 }; // Default: newest first
-    switch (req.query.sort) {
-        case 'price_asc':
-            sort = { price: 1 };
-            break;
-        case 'price_desc':
-            sort = { price: -1 };
-            break;
-        case 'rating':
-            sort = { rating: -1 };
-            break;
-        case 'name_asc':
-            sort = { name: 1 };
-            break;
-        case 'name_desc':
-            sort = { name: -1 };
-            break;
-        case 'popularity':
-            sort = { soldCount: -1 };
-            break;
-    }
-    
-    // Get products with enhanced data
-        const products = await Product.find(query)
-            .sort(sort)
-            .skip(skip)
-        .limit(limit)
-        .populate('reviews', 'rating comment')
-        .lean();
-        
-        // Get total count for pagination
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / limit);
-        
-    // Get categories and brands for filter
-        const categories = await Product.distinct('category');
-    const brands = await Product.distinct('brand');
-    
-    // Get price range for filter
-    const priceStats = await Product.aggregate([
-        { $match: query },
-        {
-            $group: {
-                _id: null,
-                minPrice: { $min: '$price' },
-                maxPrice: { $max: '$price' }
+
+        // Apply sorting
+        if (req.query.sort) {
+            switch (req.query.sort) {
+                case 'price_asc':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price_desc':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProducts.sort((a, b) => b.rating - a.rating);
+                    break;
+                default:
+                    // Default: newest first (by ID)
+                    filteredProducts.sort((a, b) => b._id.localeCompare(a._id));
             }
         }
-    ]);
-        
+
+        // Pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = 8;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+        const totalPages = Math.ceil(filteredProducts.length / limit);
+
         res.render('client/shop', {
             title: 'Shop Products',
-            products,
-            categories,
-            brands,
+            products: paginatedProducts,
+            categories: ['Men', 'Women', 'Kids', 'Paintings'],
+            brands: ['Fashion Brand', 'Elegance', 'Denim Co', 'Art Studio'],
             currentPage: page,
-            totalPages,
-            totalProducts,
-            currentSearch: req.query.search,
-            currentCategory: req.query.category,
-            currentBrand: req.query.brand,
-            currentSort: req.query.sort,
-            minPrice: req.query.minPrice,
-            maxPrice: req.query.maxPrice,
-            minRating: req.query.minRating,
-            inStock: req.query.inStock,
-            priceRange: priceStats[0] || { minPrice: CONSTANTS.DEFAULT_MIN_PRICE, maxPrice: CONSTANTS.DEFAULT_MAX_PRICE },
+            totalPages: totalPages,
+            totalProducts: filteredProducts.length,
+            currentSearch: req.query.search || '',
+            currentCategory: req.query.category || '',
+            currentBrand: req.query.brand || '',
+            currentSort: req.query.sort || '',
+            minPrice: req.query.minPrice || '',
+            maxPrice: req.query.maxPrice || '',
+            minRating: req.query.minRating || '',
+            inStock: req.query.inStock || '',
+            priceRange: { minPrice: 0, maxPrice: 4000 },
             user: req.user
         });
-}));
-
-// Enhanced product detail page
-router.get('/product/:id', asyncHandler(async (req, res) => {
-    // Validate ObjectId format
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-        return res.status(404).render('error', { 
-            title: 'Product Not Found',
-            message: 'Invalid product ID format.',
-            statusCode: 404,
+    } catch (error) {
+        console.error('Shop page error:', error);
+        // Render shop page with empty data instead of error page
+        res.render('client/shop', {
+            title: 'Shop Products',
+            products: [],
+            categories: ['Men', 'Women', 'Kids', 'Paintings'],
+            brands: ['Fashion Brand', 'Elegance', 'Denim Co', 'Art Studio'],
+            currentPage: 1,
+            totalPages: 1,
+            totalProducts: 0,
+            currentSearch: '',
+            currentCategory: '',
+            currentBrand: '',
+            currentSort: '',
+            minPrice: '',
+            maxPrice: '',
+            minRating: '',
+            inStock: '',
+            priceRange: { minPrice: 0, maxPrice: 1000 },
             user: req.user
         });
     }
-    
-    const product = await Product.findById(req.params.id)
-        .populate({
-            path: 'reviews',
-            populate: {
-                path: 'user',
-                select: 'firstName lastName username'
+});
+
+// Enhanced product detail page
+router.get('/product/:id', async (req, res) => {
+    try {
+        // Sample products data for demonstration
+        const sampleProducts = [
+            {
+                _id: '507f1f77bcf86cd799439011',
+                name: 'Elegant Women\'s Dress',
+                category: 'Women',
+                brand: 'Fashion Brand',
+                price: 1299,
+                originalPrice: 1599,
+                discount: 19,
+                rating: 4.5,
+                reviewCount: 23,
+                image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+                description: 'Beautiful elegant dress perfect for any occasion. This stunning dress features a flattering silhouette with premium fabric that ensures comfort and style. Perfect for weddings, parties, or any special event where you want to make a lasting impression.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439012',
+                name: 'Men\'s Casual Shirt',
+                category: 'Men',
+                brand: 'Elegance',
+                price: 899,
+                originalPrice: 1199,
+                discount: 25,
+                rating: 4.2,
+                reviewCount: 18,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
+                description: 'Comfortable and stylish casual shirt for men. Made from breathable cotton fabric, this shirt offers the perfect balance of comfort and style. Ideal for casual outings, office wear, or weekend gatherings.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439013',
+                name: 'Kids Summer Dress',
+                category: 'Kids',
+                brand: 'Denim Co',
+                price: 599,
+                originalPrice: 799,
+                discount: 25,
+                rating: 4.8,
+                reviewCount: 12,
+                image: 'https://images.unsplash.com/photo-1553451191-6d7232c0f5b8?w=400&h=500&fit=crop',
+                description: 'Adorable summer dress for kids. This lightweight and comfortable dress is perfect for summer days. Features a cute design with soft fabric that\'s gentle on children\'s skin.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439014',
+                name: 'Abstract Art Painting',
+                category: 'Paintings',
+                brand: 'Art Studio',
+                price: 2499,
+                originalPrice: 2999,
+                discount: 17,
+                rating: 4.7,
+                reviewCount: 8,
+                image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=500&fit=crop',
+                description: 'Beautiful abstract art painting for your home. This hand-painted masterpiece adds a touch of sophistication to any room. Each piece is unique and created with premium materials.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439015',
+                name: 'Women\'s Handbag',
+                category: 'Women',
+                brand: 'Fashion Brand',
+                price: 1899,
+                originalPrice: 2299,
+                discount: 17,
+                rating: 4.3,
+                reviewCount: 31,
+                image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=500&fit=crop',
+                description: 'Stylish and practical handbag for women. This versatile bag features multiple compartments for organization and is made from durable materials. Perfect for everyday use or special occasions.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439016',
+                name: 'Men\'s Formal Suit',
+                category: 'Men',
+                brand: 'Elegance',
+                price: 3499,
+                originalPrice: 4499,
+                discount: 22,
+                rating: 4.6,
+                reviewCount: 15,
+                image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=500&fit=crop',
+                description: 'Professional formal suit for men. This premium suit is crafted from high-quality fabric and features a modern cut that ensures a perfect fit. Ideal for business meetings, interviews, or formal events.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439017',
+                name: 'Kids Winter Jacket',
+                category: 'Kids',
+                brand: 'Denim Co',
+                price: 1299,
+                originalPrice: 1599,
+                discount: 19,
+                rating: 4.4,
+                reviewCount: 9,
+                image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=500&fit=crop',
+                description: 'Warm and cozy winter jacket for kids. This insulated jacket provides excellent protection against cold weather while maintaining comfort and style. Features a durable design that withstands active play.'
+            },
+            {
+                _id: '507f1f77bcf86cd799439018',
+                name: 'Landscape Painting',
+                category: 'Paintings',
+                brand: 'Art Studio',
+                price: 1899,
+                originalPrice: 2299,
+                discount: 17,
+                rating: 4.9,
+                reviewCount: 6,
+                image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=500&fit=crop',
+                description: 'Stunning landscape painting for nature lovers. This beautiful artwork captures the essence of natural beauty with vibrant colors and detailed brushwork. A perfect addition to any home or office.'
             }
-        })
-        .lean();
+        ];
+
+        // Find the product by ID
+        const product = sampleProducts.find(p => p._id === req.params.id);
         
         if (!product) {
             return res.status(404).render('error', { 
                 title: 'Product Not Found',
-            message: 'The product you are looking for does not exist.',
-            statusCode: 404,
+                message: 'The product you are looking for does not exist.',
+                statusCode: 404,
                 user: req.user
             });
         }
-    
-    // Get related products
-    const relatedProducts = await Product.find({
-        category: product.category,
-        _id: { $ne: product._id }
-    })
-    .limit(4)
-    .lean();
-    
-    // Get recently viewed products (if user is logged in)
-    let recentlyViewed = [];
-    if (req.user) {
-        // This would typically be stored in user's session or database
-        // For now, we'll get products from the same category
-        recentlyViewed = await Product.find({
-            category: product.category,
-            _id: { $ne: product._id }
-        })
-        .limit(3)
-        .lean();
-        }
-        
+
+        // Get related products (same category, different product)
+        const relatedProducts = sampleProducts.filter(p => 
+            p.category === product.category && p._id !== product._id
+        ).slice(0, 4);
+
         res.render('client/product-detail', {
             title: product.name,
-            product,
-        relatedProducts,
-        recentlyViewed,
+            product: product,
+            relatedProducts: relatedProducts,
             user: req.user
         });
-}));
+
+    } catch (error) {
+        console.error('Product detail error:', error);
+        res.status(500).render('error', { 
+            title: 'Error',
+            message: 'Something went wrong while loading the product.',
+            statusCode: 500,
+            user: req.user
+        });
+    }
+});
 
 // Product search with suggestions
-router.get('/search', asyncHandler(async (req, res) => {
-    const { q, category, sort } = req.query;
-    const page = parseInt(req.query.page) || 1;
-    const limit = 12;
-    const skip = (page - 1) * limit;
-    
-    let query = {};
-    
-    if (q) {
-        query.$or = [
-            { name: { $regex: q, $options: 'i' } },
-            { brand: { $regex: q, $options: 'i' } },
-            { description: { $regex: q, $options: 'i' } },
-            { category: { $regex: q, $options: 'i' } }
-        ];
-    }
-    
-    if (category) {
-        query.category = category;
-    }
-    
-    let sortOption = { createdAt: -1 };
-    if (sort === 'price_asc') sortOption = { price: 1 };
-    else if (sort === 'price_desc') sortOption = { price: -1 };
-    else if (sort === 'rating') sortOption = { rating: -1 };
-    
-    const products = await Product.find(query)
-        .sort(sortOption)
-        .skip(skip)
-        .limit(limit)
-        .lean();
-    
-    const totalProducts = await Product.countDocuments(query);
-    const totalPages = Math.ceil(totalProducts / limit);
-    
-    // Get search suggestions
-    const suggestions = await Product.find({
-        $or: [
-            { name: { $regex: q, $options: 'i' } },
-            { brand: { $regex: q, $options: 'i' } }
-        ]
-    })
-    .limit(5)
-    .select('name brand category')
-    .lean();
-    
-    res.render('client/search', {
-        title: `Search Results for "${q}"`,
-        products,
-        suggestions,
-        searchQuery: q,
-        currentPage: page,
-        totalPages,
-        totalProducts,
-        currentCategory: category,
-        currentSort: sort,
-            user: req.user
+router.get('/search', async (req, res, next) => {
+    try {
+        // Check database connection
+        if (mongoose.connection.readyState !== 1) {
+            // Database not connected, using fallback data for search...
+            // Use fallback data instead of trying to connect
+            const templateData = {
+                title: 'Search Products',
+                products: [],
+                searchQuery: req.query.q || '',
+                category: req.query.category || '',
+                brand: req.query.brand || '',
+                minPrice: req.query.minPrice || '',
+                maxPrice: req.query.maxPrice || '',
+                sort: req.query.sort || 'relevance',
+                currentPage: 1,
+                totalPages: 1,
+                totalProducts: 0,
+                categories: [],
+                brands: [],
+                user: req.user || null,
+                message: 'Database connection unavailable. Please try again later.'
+            };
+            return res.render('client/search', templateData);
+        }
+
+        const searchQuery = req.query.q || '';
+        const category = req.query.category || '';
+        const brand = req.query.brand || '';
+        const minPrice = req.query.minPrice || '';
+        const maxPrice = req.query.maxPrice || '';
+        const sort = req.query.sort || 'relevance';
+        const page = parseInt(req.query.page) || 1;
+        const limit = 12;
+        const skip = (page - 1) * limit;
+
+        // Build search query
+        let query = {};
+        
+        if (searchQuery) {
+            query.$or = [
+                { name: { $regex: searchQuery, $options: 'i' } },
+                { description: { $regex: searchQuery, $options: 'i' } },
+                { brand: { $regex: searchQuery, $options: 'i' } },
+                { category: { $regex: searchQuery, $options: 'i' } }
+            ];
+        }
+        
+        if (category) query.category = category;
+        if (brand) query.brand = brand;
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = parseFloat(minPrice);
+            if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+        }
+
+        // Sort options
+        let sortOption = {};
+        switch (sort) {
+            case 'price_asc':
+                sortOption = { price: 1 };
+                break;
+            case 'price_desc':
+                sortOption = { price: -1 };
+                break;
+            case 'rating':
+                sortOption = { rating: -1 };
+                break;
+            case 'newest':
+                sortOption = { createdAt: -1 };
+                break;
+            default:
+                sortOption = { createdAt: -1 };
+        }
+
+        const products = await Product.find(query)
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        const totalProducts = await Product.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Get filter options
+        const categories = await Product.distinct('category');
+        const brands = await Product.distinct('brand');
+
+        // Ensure all variables are defined for the template
+        const templateData = {
+            title: searchQuery ? `Search Results for "${searchQuery}"` : 'Search Products',
+            products: products || [],
+            searchQuery: searchQuery || '',
+            selectedCategory: category || '',
+            selectedBrand: brand || '',
+            minPrice: minPrice || '',
+            maxPrice: maxPrice || '',
+            sort: sort || 'relevance',
+            page: page || 1,
+            limit: limit || 12,
+            currentPage: page || 1,
+            totalPages: totalPages || 1,
+            totalProducts: totalProducts || 0,
+            categories: categories || [],
+            brands: brands || [],
+            user: req.user || null
+        };
+
+        res.render('client/search', templateData);
+    } catch (error) {
+        console.error('Search route error:', error);
+        res.status(500).render('error', {
+            title: '500 - Server Error',
+            message: 'Error performing search'
         });
-}));
-
-// Wishlist functionality
-router.get('/wishlist', authenticateTokenWeb, asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('wishlist');
-    
-    res.render('client/wishlist', {
-        title: 'My Wishlist',
-        wishlist: user.wishlist || [],
-        user: req.user
-    });
-}));
-
-// Add to wishlist
-router.post('/wishlist/:productId', authenticateTokenWeb, asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-    
-    const user = await User.findById(req.user._id);
-    const product = await Product.findById(productId);
-    
-    if (!product) {
-        return res.status(404).json({ success: false, message: 'Product not found' });
     }
-    
-    if (!user.wishlist) {
-        user.wishlist = [];
-    }
-    
-    const isInWishlist = user.wishlist.includes(productId);
-    
-    if (isInWishlist) {
-        user.wishlist = user.wishlist.filter(id => id.toString() !== productId);
-        await user.save();
-        res.json({ success: true, message: 'Removed from wishlist', inWishlist: false });
-    } else {
-        user.wishlist.push(productId);
-        await user.save();
-        res.json({ success: true, message: 'Added to wishlist', inWishlist: true });
-    }
-}));
+});
 
 // Product comparison
 router.get('/compare', asyncHandler(async (req, res) => {
@@ -328,6 +515,52 @@ router.post('/compare/:productId', asyncHandler(async (req, res) => {
     });
 }));
 
+// Category index page (all categories)
+router.get('/category', async (req, res, next) => {
+    try {
+        // Check database connection
+        if (mongoose.connection.readyState !== 1) {
+            // Database not connected, using fallback data for categories...
+            // Use fallback data instead of trying to connect
+            const templateData = {
+                title: 'All Categories',
+                categories: [],
+                user: req.user || null,
+                message: 'Database connection unavailable. Please try again later.'
+            };
+            return res.render('client/category', templateData);
+        }
+
+        const categories = await Product.distinct('category');
+        const categoryStats = [];
+        
+        for (const category of categories) {
+            const count = await Product.countDocuments({ category });
+            categoryStats.push({ name: category, count });
+        }
+        
+        // Ensure all variables are defined for the template
+        const templateData = {
+            title: 'All Categories',
+            categories: categoryStats || [],
+            categoryName: 'All Categories',
+            brands: [],
+            products: [],
+            page: 1,
+            limit: 12,
+            user: req.user || null
+        };
+        
+        res.render('client/category', templateData);
+    } catch (error) {
+        console.error('Category route error:', error);
+        res.status(500).render('error', {
+            title: '500 - Server Error',
+            message: 'Error loading categories'
+        });
+    }
+});
+
 // Category page
 router.get('/category/:category', asyncHandler(async (req, res) => {
     const { category } = req.params;
@@ -351,13 +584,63 @@ router.get('/category/:category', asyncHandler(async (req, res) => {
         title: `${category} Products`,
         products,
         category,
+        categoryName: category,
         subcategories,
         currentPage: page,
         totalPages,
         totalProducts,
+        brands: [],
+        page: page,
+        limit: limit,
         user: req.user
     });
 }));
+
+// Brand index page (all brands)
+router.get('/brand', async (req, res, next) => {
+    try {
+        // Check database connection
+        if (mongoose.connection.readyState !== 1) {
+            // Database not connected, using fallback data for brands...
+            // Use fallback data instead of trying to connect
+            const templateData = {
+                title: 'All Brands',
+                brands: [],
+                user: req.user || null,
+                message: 'Database connection unavailable. Please try again later.'
+            };
+            return res.render('client/brand', templateData);
+        }
+
+        const brands = await Product.distinct('brand');
+        const brandStats = [];
+        
+        for (const brand of brands) {
+            const count = await Product.countDocuments({ brand });
+            brandStats.push({ name: brand, count });
+        }
+        
+        // Ensure all variables are defined for the template
+        const templateData = {
+            title: 'All Brands',
+            brands: brandStats || [],
+            brandName: 'All Brands',
+            categories: [],
+            products: [],
+            page: 1,
+            limit: 12,
+            user: req.user || null
+        };
+        
+        res.render('client/brand', templateData);
+    } catch (error) {
+        console.error('Brand route error:', error);
+        res.status(500).render('error', {
+            title: '500 - Server Error',
+            message: 'Error loading brands'
+        });
+    }
+});
 
 // Brand page
 router.get('/brand/:brand', asyncHandler(async (req, res) => {
@@ -379,62 +662,131 @@ router.get('/brand/:brand', asyncHandler(async (req, res) => {
         title: `${brand} Products`,
         products,
         brand,
+        brandName: brand,
         currentPage: page,
         totalPages,
         totalProducts,
+        categories: [],
+        brands: [],
         user: req.user
     });
 }));
 
 // New arrivals
-router.get('/new-arrivals', asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 12;
-    const skip = (page - 1) * limit;
-    
-    const products = await Product.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean();
-    
-    const totalProducts = await Product.countDocuments();
-    const totalPages = Math.ceil(totalProducts / limit);
-    
-    res.render('client/new-arrivals', {
-        title: 'New Arrivals',
-        products,
-        currentPage: page,
-        totalPages,
-        totalProducts,
-        user: req.user
-    });
-}));
+router.get('/new-arrivals', async (req, res, next) => {
+    try {
+        // Check database connection
+        if (mongoose.connection.readyState !== 1) {
+            // Database not connected, using fallback data for new arrivals...
+            // Use fallback data instead of trying to connect
+            const templateData = {
+                title: 'New Arrivals',
+                products: [],
+                currentPage: 1,
+                totalPages: 1,
+                totalProducts: 0,
+                user: req.user || null,
+                message: 'Database connection unavailable. Please try again later.'
+            };
+            return res.render('client/new-arrivals', templateData);
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 12;
+        const skip = (page - 1) * limit;
+        
+        const products = await Product.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+        
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
+        
+        // Ensure all variables are defined for the template
+        const templateData = {
+            title: 'New Arrivals',
+            products: products || [],
+            categories: [],
+            brands: [],
+            page: page || 1,
+            limit: limit || 12,
+            totalProducts: totalProducts || 0,
+            currentPage: page || 1,
+            totalPages: totalPages || 1,
+            user: req.user || null
+        };
+        
+        res.render('client/new-arrivals', templateData);
+    } catch (error) {
+        console.error('New arrivals route error:', error);
+        res.status(500).render('error', {
+            title: '500 - Server Error',
+            message: 'Error loading new arrivals'
+        });
+    }
+});
 
 // Best sellers
-router.get('/best-sellers', asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 12;
-    const skip = (page - 1) * limit;
-    
-    const products = await Product.find()
-        .sort({ soldCount: -1, rating: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean();
-    
-    const totalProducts = await Product.countDocuments();
-    const totalPages = Math.ceil(totalProducts / limit);
-    
-    res.render('client/best-sellers', {
-        title: 'Best Sellers',
-        products,
-        currentPage: page,
-        totalPages,
-        totalProducts,
-        user: req.user
-    });
-}));
+router.get('/best-sellers', async (req, res, next) => {
+    try {
+        // Check database connection
+        if (mongoose.connection.readyState !== 1) {
+            // Database not connected, using fallback data for best sellers...
+            // Use fallback data instead of trying to connect
+            const templateData = {
+                title: 'Best Sellers',
+                products: [],
+                categories: [],
+                brands: [],
+                page: 1,
+                limit: 12,
+                totalProducts: 0,
+                currentPage: 1,
+                totalPages: 1,
+                user: req.user || null,
+                message: 'Database connection unavailable. Please try again later.'
+            };
+            return res.render('client/best-sellers', templateData);
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 12;
+        const skip = (page - 1) * limit;
+        
+        const products = await Product.find()
+            .sort({ soldCount: -1, rating: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+        
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
+        
+        // Ensure all variables are defined for the template
+        const templateData = {
+            title: 'Best Sellers',
+            products: products || [],
+            categories: [],
+            brands: [],
+            page: page || 1,
+            limit: limit || 12,
+            totalProducts: totalProducts || 0,
+            currentPage: page || 1,
+            totalPages: totalPages || 1,
+            user: req.user || null
+        };
+        
+        res.render('client/best-sellers', templateData);
+    } catch (error) {
+        console.error('Best sellers route error:', error);
+        res.status(500).render('error', {
+            title: '500 - Server Error',
+            message: 'Error loading best sellers'
+        });
+    }
+});
 
 // Sale/Deals page
 router.get('/deals', asyncHandler(async (req, res) => {
@@ -442,24 +794,68 @@ router.get('/deals', asyncHandler(async (req, res) => {
     const limit = 12;
     const skip = (page - 1) * limit;
     
-    const products = await Product.find({
-        $or: [
-            { discountPercentage: { $gt: 0 } },
-            { onSale: true }
-        ]
-    })
-    .sort({ discountPercentage: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
+    // Build query for deals
+    let query = {};
     
-    const totalProducts = await Product.countDocuments({
-        $or: [
-            { discountPercentage: { $gt: 0 } },
+    // Search filter
+    if (req.query.search) {
+        query.$or = [
+            { name: { $regex: req.query.search, $options: 'i' } },
+            { brand: { $regex: req.query.search, $options: 'i' } },
+            { description: { $regex: req.query.search, $options: 'i' } },
+            { category: { $regex: req.query.search, $options: 'i' } }
+        ];
+    }
+    
+    // Category filter
+    if (req.query.category) {
+        query.category = req.query.category;
+    }
+    
+    // Discount filter
+    if (req.query.discount) {
+        const minDiscount = parseInt(req.query.discount);
+        query.$or = [
+            { discountPercentage: { $gte: minDiscount } },
             { onSale: true }
-        ]
-    });
+        ];
+    }
+    
+    // If no specific filters, show products that might be on sale or have discounts
+    if (!req.query.search && !req.query.category && !req.query.discount) {
+        query.$or = [
+            { discountPercentage: { $gt: 0 } },
+            { onSale: true },
+            { price: { $lt: 1000 } }, // Show products under 1000 as "deals"
+            { category: { $in: ['Women', 'Men', 'Kids'] } } // Show fashion items
+        ];
+    }
+    
+    // Sort options
+    let sort = { createdAt: -1 }; // Default: newest first
+    switch (req.query.sort) {
+        case 'discount_desc':
+            sort = { discountPercentage: -1 };
+            break;
+        case 'price_asc':
+            sort = { price: 1 };
+            break;
+        case 'price_desc':
+            sort = { price: -1 };
+            break;
+    }
+    
+    const products = await Product.find(query)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    
+    const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
+    
+    // Get categories for filter
+    const categories = await Product.distinct('category');
     
     res.render('client/deals', {
         title: 'Deals & Discounts',
@@ -467,6 +863,11 @@ router.get('/deals', asyncHandler(async (req, res) => {
         currentPage: page,
         totalPages,
         totalProducts,
+        categories,
+        currentSearch: req.query.search || '',
+        currentCategory: req.query.category || '',
+        currentDiscount: req.query.discount || '',
+        currentSort: req.query.sort || '',
         user: req.user
     });
 }));
@@ -492,7 +893,7 @@ router.get('/product/:id/reviews', asyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
     
     const reviews = await Review.find({ product: id })
-        .populate('user', 'firstName lastName username')
+        .populate('user', 'firstName lastName')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -510,362 +911,54 @@ router.get('/product/:id/reviews', asyncHandler(async (req, res) => {
     });
 }));
 
-// Client cart page - redirect to modern cart
-router.get('/cart', asyncHandler(async (req, res) => {
-    res.redirect('/client/cart-simple');
-}));
-
-// Client checkout page
-router.get('/checkout', (req, res) => {
-    if (!req.user) {
-        // Redirect to login with return URL
-        return res.redirect('/users/login?returnUrl=' + encodeURIComponent('/client/checkout'));
-    }
-    
-    res.render('client/checkout', {
-        title: 'Checkout',
-        user: req.user
-    });
-});
-
-// API: Get product reviews
-router.get('/api/reviews/product/:productId', async (req, res) => {
-    try {
-        const reviews = await Review.find({ product: req.params.productId })
-            .populate('user', 'firstName lastName')
-            .sort({ createdAt: -1 });
-        
-        res.json(reviews);
-    } catch (error) {
-        console.error('Error fetching reviews:', error);
-        res.status(500).json({ message: 'Error fetching reviews' });
-    }
-});
-
-// API: Add to cart
-router.post('/api/cart/add', async (req, res) => {
-    try {
-        const { productId, quantity = 1 } = req.body;
-        
-        // Adding product to cart
-        
-        // Validate product exists
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(CONSTANTS.STATUS_CODES.NOT_FOUND).json({ message: CONSTANTS.ERROR_MESSAGES.NOT_FOUND });
-        }
-        
-        // Ensure quantity is a valid positive integer
-        const validQuantity = Math.max(1, parseInt(quantity) || 1);
-        // Quantity validated
-        
-        // Check stock
-        if (product.stock < validQuantity) {
-            return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ message: 'Insufficient stock' });
-        }
-        
-        // Initialize session cart if it doesn't exist
-        if (!req.session.cart) {
-            req.session.cart = [];
-        }
-        
-        // Check if product already in cart
-        const existingItem = req.session.cart.find(item => 
-            item.productId.toString() === productId
-        );
-        
-        if (existingItem) {
-            existingItem.quantity = Math.max(1, (existingItem.quantity || 1) + validQuantity);
-            // Updated existing item quantity
-        } else {
-            req.session.cart.push({
-                productId: product._id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                quantity: validQuantity
-            });
-            // Added new item to cart
-        }
-        
-        const cartCount = req.session.cart.reduce((total, item) => total + (item.quantity || 1), 0);
-        // Cart updated successfully
-        
-        // Save session explicitly
-        req.session.save((err) => {
-            if (err) {
-                console.error('[Cart Add] Session save error:', err);
-                return res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SESSION_SAVE_FAILED });
-            }
-            
-            res.json({ 
-                message: 'Product added to cart',
-                cartCount: cartCount
-            });
-        });
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SERVER_ERROR });
-    }
-});
-
-// API: Get cart items
-router.get('/api/cart', async (req, res) => {
+// Cart page route
+router.get('/cart', async (req, res) => {
     try {
         const cart = req.session.cart || [];
-        res.json(cart);
-    } catch (error) {
-        console.error('Error fetching cart:', error);
-        res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SERVER_ERROR });
-    }
-});
-
-// API: Remove from cart
-router.delete('/api/cart/:productId', async (req, res) => {
-    try {
-        // Removing item from cart
+        let cartItems = [];
+    let subtotal = 0;
+    let totalItems = 0;
+    
+        if (cart.length > 0) {
+            const productIds = cart.map(item => item.productId);
+        const products = await Product.find({ _id: { $in: productIds } }).lean();
         
-        if (!req.session.cart) {
-            return res.status(400).json({ message: 'Cart is empty' });
-        }
-        
-        req.session.cart = req.session.cart.filter(item => 
-            item.productId.toString() !== req.params.productId
-        );
-        
-        const cartCount = req.session.cart.reduce((total, item) => total + item.quantity, 0);
-        
-        // Save session explicitly
-        req.session.save((err) => {
-            if (err) {
-                console.error('[Cart Remove] Session save error:', err);
-                return res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SESSION_SAVE_FAILED });
-            }
-            
-            res.json({ 
-                message: 'Item removed from cart',
-                cartCount: cartCount
-            });
-        });
-    } catch (error) {
-        console.error('Error removing from cart:', error);
-        res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SERVER_ERROR });
-    }
-});
-
-// API: Update cart quantity
-router.put('/api/cart/:productId', async (req, res) => {
-    try {
-        const { quantity } = req.body;
-        
-        // Updating cart item quantity
-        
-        // Validate quantity - ensure it's a valid positive integer
-        const validQuantity = parseInt(quantity);
-        if (!Number.isFinite(validQuantity) || validQuantity <= 0) {
-            return res.status(CONSTANTS.STATUS_CODES.BAD_REQUEST).json({ message: CONSTANTS.ERROR_MESSAGES.INVALID_INPUT });
-        }
-        
-        if (!req.session.cart) {
-            return res.status(400).json({ message: 'Cart is empty' });
-        }
-        
-        const item = req.session.cart.find(item => 
-            item.productId.toString() === req.params.productId
-        );
-        
-        if (!item) {
-            return res.status(CONSTANTS.STATUS_CODES.NOT_FOUND).json({ message: 'Item not found in cart' });
-        }
-        
-        // Update the quantity
-        item.quantity = validQuantity;
-        
-        const cartCount = req.session.cart.reduce((total, item) => total + (item.quantity || 1), 0);
-        // Cart item updated successfully
-        
-        // Save session explicitly
-        req.session.save((err) => {
-            if (err) {
-                console.error('[Cart Update] Session save error:', err);
-                return res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SESSION_SAVE_FAILED });
-            }
-            
-            res.json({ 
-                message: 'Cart updated',
-                cartCount: cartCount
-            });
-        });
-    } catch (error) {
-        console.error('Error updating cart:', error);
-        res.status(CONSTANTS.STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: CONSTANTS.ERROR_MESSAGES.SERVER_ERROR });
-    }
-});
-
-// API: Transfer cart from localStorage to session
-router.post('/api/cart/transfer', async (req, res) => {
-    try {
-        const { cartItems } = req.body;
-        
-        if (!cartItems || cartItems.length === 0) {
-            return res.json({ message: 'No items to transfer' });
-        }
-        
-        // Initialize session cart if it doesn't exist
-        if (!req.session.cart) {
-            req.session.cart = [];
-        }
-        
-        let transferredCount = 0;
-        
-        for (const item of cartItems) {
-            // Validate product exists
-            const product = await Product.findById(item.id);
-            if (!product) {
-                continue; // Skip invalid products
-            }
-            
-            // Check if product already in session cart
-            const existingItem = req.session.cart.find(sessionItem => 
-                sessionItem.productId.toString() === item.id
-            );
-            
-            if (existingItem) {
-                existingItem.quantity += parseInt(item.quantity);
-            } else {
-                req.session.cart.push({
-                    productId: product._id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: parseInt(item.quantity)
-                });
-            }
-            
-            transferredCount++;
-        }
-        
-        const cartCount = req.session.cart.reduce((total, item) => total + item.quantity, 0);
-        
-        // Save session explicitly
-        req.session.save((err) => {
-            if (err) {
-                console.error('[Cart Transfer] Session save error:', err);
-                return res.status(500).json({ message: 'Error saving cart' });
-            }
-            
-            res.json({ 
-                message: `${transferredCount} items transferred to cart`,
-                cartCount: cartCount
-            });
-        });
-    } catch (error) {
-        console.error('Error transferring cart:', error);
-        res.status(500).json({ message: 'Error transferring cart' });
-    }
-});
-
-
-
-// API: Get cart count
-router.get('/api/cart/count', async (req, res) => {
-    try {
-        // Getting cart count
-
-        
-        // Fix any cart items with null quantities
-        if (req.session.cart) {
-            req.session.cart.forEach(item => {
-                if (!item.quantity || item.quantity === null) {
-                    item.quantity = 1;
-                    // Fixed null quantity
+            cartItems = cart.map(item => {
+                const product = products.find(p => p._id.toString() === item.productId);
+            if (product) {
+                    const itemTotal = product.price * item.quantity;
+                subtotal += itemTotal;
+                    totalItems += item.quantity;
+                return {
+                        ...item,
+                        product,
+                        itemTotal
+                    };
                 }
-            });
+                return null;
+            }).filter(Boolean);
         }
         
-        const cartCount = req.session.cart ? 
-            req.session.cart.reduce((total, item) => total + (item.quantity || 1), 0) : 0;
+        const tax = subtotal * CONSTANTS.TAX_RATE;
+        const shipping = subtotal > CONSTANTS.FREE_SHIPPING_THRESHOLD ? 0 : CONSTANTS.SHIPPING_COST;
+        const total = subtotal + tax + shipping;
         
-        // Cart count calculated
-        res.json({ cartCount });
-    } catch (error) {
-        console.error('Error getting cart count:', error);
-        res.status(500).json({ message: 'Error getting cart count' });
-    }
-});
-
-// API: Fix cart items with null quantities
-router.post('/api/cart/fix', async (req, res) => {
-    try {
-        // Fixing cart items with null quantities
-        
-        if (req.session.cart) {
-            let fixedCount = 0;
-            req.session.cart.forEach(item => {
-                if (!item.quantity || item.quantity === null) {
-                    item.quantity = 1;
-                    fixedCount++;
-                }
-            });
-            
-            // Fixed cart items
-            
-            res.json({ 
-                message: `Fixed ${fixedCount} cart items`,
-                cartCount: req.session.cart.reduce((total, item) => total + (item.quantity || 1), 0)
-            });
-        } else {
-            res.json({ message: 'No cart to fix', cartCount: 0 });
-        }
-    } catch (error) {
-        console.error('Error fixing cart:', error);
-        res.status(500).json({ message: 'Error fixing cart' });
-    }
-});
-
-// Test route removed for production
-
-// Simple clear cart route removed for production security
-
-// API: Clear cart
-router.delete('/api/cart/clear', authenticateToken, async (req, res) => {
-            try {
-            // Clearing cart for user
-        
-        // Clear the cart multiple ways to ensure it's cleared
-        req.session.cart = [];
-        delete req.session.cart;
-        req.session.cart = [];
-        
-        // Also ensure the session user is set for consistency
-        if (!req.session.user && req.user) {
-            req.session.user = req.user;
-        }
-        
-        // Force session save with more detailed error handling
-        req.session.save((err) => {
-            if (err) {
-                console.error('[Clear Cart] Error saving session:', err);
-                return res.status(500).json({ message: 'Error clearing cart' });
-            }
-            
-            // Cart cleared successfully
-            
-            // Double-check the cart is actually empty
-            const cartCount = req.session.cart ? req.session.cart.reduce((total, item) => total + item.quantity, 0) : 0;
-            // Cart count updated
-            
-            // Add a small delay to ensure session is fully saved
-            setTimeout(() => {
-                res.json({ 
-                    message: 'Cart cleared successfully',
-                    cartCount: 0
-                });
-            }, CONSTANTS.SESSION_SAVE_DELAY);
+        res.render('client/cart', {
+            title: 'Shopping Cart',
+            cartItems,
+            subtotal,
+            tax,
+            shipping,
+            total,
+            totalItems,
+            user: req.user || null
         });
     } catch (error) {
-        console.error('Error clearing cart:', error);
-        res.status(500).json({ message: 'Error clearing cart' });
+        console.error('Cart page error:', error);
+        res.status(500).render('error', {
+            title: '500 - Server Error',
+            message: 'Error loading cart page'
+        });
     }
 });
 

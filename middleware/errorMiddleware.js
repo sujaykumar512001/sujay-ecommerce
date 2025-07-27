@@ -83,6 +83,9 @@ const errorTracker = {
   windowMs: 60 * 1000 // 1 minute
 };
 
+// Clear error tracking on startup
+errorTracker.errors.clear();
+
 /**
  * Sanitize error message for security
  */
@@ -158,6 +161,10 @@ const getErrorCategory = (error) => {
  * Check if error rate limit is exceeded
  */
 const isErrorRateLimited = (ip) => {
+  // TEMPORARILY DISABLED - causing authentication errors
+  return false;
+  
+  /*
   const now = Date.now();
   const windowStart = now - errorTracker.windowMs;
   
@@ -172,6 +179,7 @@ const isErrorRateLimited = (ip) => {
   errorTracker.errors.set(ip, recentErrors);
   
   return recentErrors.length >= errorTracker.maxErrors;
+  */
 };
 
 /**
@@ -240,7 +248,7 @@ const logError = (error, req, severity, category) => {
       console.warn('⚠️ MEDIUM ERROR:', logData);
       break;
     case ErrorSeverity.LOW:
-      console.log('ℹ️ LOW ERROR:', logData);
+      // Low error logged by service
       break;
   }
 };
