@@ -1,7 +1,7 @@
 # Ignore everything except the test function
 *
 !api/
-!api/test.js
+!api/hello.js
 !package.json
 !vercel.json
 !.vercelignore 
