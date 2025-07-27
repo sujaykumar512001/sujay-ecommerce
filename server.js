@@ -23,8 +23,23 @@ const morgan = require('morgan');
 // Load environment variables
 dotenv.config();
 
+// Validate required environment variables
+const requiredEnvVars = [
+  'MONGODB_URI_PROD',
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET'
+];
+
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+if (missingVars.length > 0 && process.env.NODE_ENV === 'production') {
+  console.error('Missing required environment variables:', missingVars);
+  console.error('Please set these variables in your Vercel dashboard');
+}
+
 // Enhanced Global Error Handlers
 process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Promise Rejection:', err.message);
   logger.error('Unhandled Promise Rejection', { error: err.message, stack: err.stack });
   // Log to security monitoring system in production
   if (process.env.NODE_ENV === 'production') {
@@ -33,6 +48,7 @@ process.on('unhandledRejection', (err) => {
 });
 
 process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err.message);
   logger.error('Uncaught Exception', { error: err.message, stack: err.stack });
   // Log to security monitoring system in production
   if (process.env.NODE_ENV === 'production') {
@@ -95,6 +111,23 @@ const app = express();
 
 // Trust proxy for production
 app.set("trust proxy", 1);
+
+// Health check route for deployment debugging
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    envVars: {
+      NODE_ENV: process.env.NODE_ENV,
+      MONGODB_URI_PROD: !!process.env.MONGODB_URI_PROD,
+      CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
+      CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
+      CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET
+    }
+  });
+});
 
 // Admin login route - standalone (no layout) - MUST BE BEFORE express-ejs-layouts
 app.get("/admin/login", (req, res) => {
@@ -622,17 +655,34 @@ const mongoUri = process.env.NODE_ENV === 'production'
   ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
   : (process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce");
 
+console.log('Connecting to MongoDB...');
+console.log('Environment:', process.env.NODE_ENV);
+console.log('MongoDB URI exists:', !!mongoUri);
+
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+  socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
 })
-.then(() => logger.db.info("MongoDB connected successfully", { 
-  environment: process.env.NODE_ENV,
-  database: mongoose.connection.db.databaseName 
-}))
+.then(() => {
+  console.log('MongoDB connected successfully');
+  logger.db.info("MongoDB connected successfully", { 
+    environment: process.env.NODE_ENV,
+    database: mongoose.connection.db.databaseName 
+  });
+})
 .catch(err => {
+  console.error('MongoDB connection error:', err.message);
   logger.db.error("MongoDB connection error", { error: err.message });
-  logger.db.warn("Continuing without MongoDB");
+  
+  // In production, we might want to exit if DB connection fails
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Critical: Cannot connect to database in production');
+    // Don't exit immediately, let the app try to start
+  } else {
+    logger.db.warn("Continuing without MongoDB (development mode)");
+  }
 });
 
 // Import routes
@@ -773,20 +823,6 @@ app.get("/", async (req, res) => {
       message: req.query.message || null
     });
   }
-});
-
-// Health check endpoint
-app.get("/health", (req, res) => {
-  const health = {
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-    version: process.env.APP_VERSION || '1.0.0',
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-  };
-  
-  res.status(200).json(health);
 });
 
 // About page route
