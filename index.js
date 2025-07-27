@@ -107,6 +107,25 @@ if (!mongoUri) {
   });
 }
 
+// Debug route to check environment variables
+app.get("/debug", (req, res) => {
+  const envVars = {};
+  Object.keys(process.env).forEach(key => {
+    if (key.includes('MONGODB') || key.includes('CLOUDINARY') || key.includes('SESSION') || key.includes('JWT')) {
+      envVars[key] = process.env[key] ? `[SET - ${process.env[key].length} chars]` : '[NOT SET]';
+    }
+  });
+  
+  res.json({
+    message: 'Environment Variables Debug',
+    environment: process.env.NODE_ENV || 'development',
+    totalEnvVars: Object.keys(process.env).length,
+    relevantEnvVars: envVars,
+    mongoUri: getMongoUri() ? `[SET - ${getMongoUri().length} chars]` : '[NOT SET]',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check route
 app.get("/health", (req, res) => {
   const mongoUri = getMongoUri();
