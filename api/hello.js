@@ -14,7 +14,7 @@ module.exports = (req, res) => {
     // Success response
     res.status(200).json({
       success: true,
-      message: 'Vercel deployment test successful!',
+      message: 'Hello from Vercel! This is a fresh deployment!',
       timestamp: new Date().toISOString(),
       method: req.method,
       url: req.url,
@@ -24,7 +24,7 @@ module.exports = (req, res) => {
       platform: process.platform
     });
   } catch (error) {
-    console.error('Test function error:', error);
+    console.error('Hello function error:', error);
     res.status(500).json({
       success: false,
       error: error.message,

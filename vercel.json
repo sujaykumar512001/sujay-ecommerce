@@ -1,19 +1,20 @@
 {
   "version": 2,
+  "name": "sujay-ecommerce-test",
   "builds": [
     {
-      "src": "api/index.js",
+      "src": "api/hello.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/hello.js"
     }
   ],
   "functions": {
-    "api/index.js": {
+    "api/hello.js": {
       "maxDuration": 10
     }
   }
