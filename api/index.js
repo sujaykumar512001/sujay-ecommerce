@@ -133,15 +133,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Simple test route
-app.get('/api/test', (req, res) => {
-  res.json({
-    message: 'API is working!',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
 // Basic routes
 app.get('/', (req, res) => {
   res.json({
