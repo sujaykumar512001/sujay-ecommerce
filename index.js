@@ -69,40 +69,70 @@ app.use(session({
 }));
 
 // MongoDB connection
-const mongoUri = process.env.NODE_ENV === 'production' 
-  ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
-  : (process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce");
+const getMongoUri = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.MONGODB_URI_PROD || process.env.MONGODB_URI;
+  }
+  return process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce";
+};
 
-console.log('Connecting to MongoDB...');
+const mongoUri = getMongoUri();
+
+console.log('=== MongoDB Connection Debug ===');
 console.log('Environment:', process.env.NODE_ENV);
 console.log('MongoDB URI exists:', !!mongoUri);
+console.log('MONGODB_URI_PROD exists:', !!process.env.MONGODB_URI_PROD);
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('URI length:', mongoUri ? mongoUri.length : 0);
+console.log('================================');
 
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-})
-.then(() => {
-  console.log('MongoDB connected successfully');
-})
-.catch(err => {
-  console.error('MongoDB connection error:', err.message);
-});
+if (!mongoUri) {
+  console.error('❌ No MongoDB URI found! Please set MONGODB_URI_PROD or MONGODB_URI environment variable.');
+} else {
+  console.log('🔗 Connecting to MongoDB...');
+  
+  mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 10,
+  })
+  .then(() => {
+    console.log('✅ MongoDB connected successfully');
+  })
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err.message);
+    console.error('Full error:', err);
+  });
+}
 
 // Health check route
 app.get("/health", (req, res) => {
+  const mongoUri = getMongoUri();
   res.json({
     status: "ok",
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    mongodb: {
+      status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+      readyState: mongoose.connection.readyState,
+      uriExists: !!mongoUri,
+      uriLength: mongoUri ? mongoUri.length : 0
+    },
     envVars: {
       NODE_ENV: process.env.NODE_ENV,
       MONGODB_URI_PROD: !!process.env.MONGODB_URI_PROD,
+      MONGODB_URI: !!process.env.MONGODB_URI,
       CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
       CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
-      CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET
+      CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
+      SESSION_SECRET: !!process.env.SESSION_SECRET,
+      JWT_SECRET: !!process.env.JWT_SECRET
+    },
+    debug: {
+      totalEnvVars: Object.keys(process.env).length,
+      hasMongoUri: !!mongoUri
     }
   });
 });
