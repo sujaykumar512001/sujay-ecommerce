@@ -1,15 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/simple.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/simple.js": {
+      "maxDuration": 10
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/simple.js"
-    }
-  ]
+  }
 } 
