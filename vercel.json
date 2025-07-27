@@ -2,18 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/test.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api/test.js"
+      "dest": "/api/index.js"
     }
   ],
   "functions": {
-    "api/test.js": {
+    "api/index.js": {
       "maxDuration": 10
     }
   }
