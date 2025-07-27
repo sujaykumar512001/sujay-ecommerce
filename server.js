@@ -961,21 +961,23 @@ const findAvailablePort = (startPort) => {
 
 const startServer = async () => {
   try {
-    // Find available port
-    const port = await findAvailablePort(9000);
+    // Use Vercel's PORT or find available port for local development
+    const port = process.env.PORT || await findAvailablePort(9000);
     logger.info(`Attempting to start server on port: ${port}`);
     
     // Start server
     app.listen(port, () => {
       logger.info(`Server running on port ${port}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      logger.info(`Local URL: http://localhost:${port}`);
+      if (process.env.NODE_ENV !== 'production') {
+        logger.info(`Local URL: http://localhost:${port}`);
+      }
       logger.info(`CSP: ${process.env.NODE_ENV === 'development' ? 'Disabled (Development)' : 'Enabled (Production)'}`);
-      logger.info(`Ready for development!`);
+      logger.info(`Ready for ${process.env.NODE_ENV || 'development'}!`);
     }).on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
+      if (err.code === 'EADDRINUSE' && process.env.NODE_ENV !== 'production') {
         logger.warn(`Port ${port} is busy, trying next port...`);
-        // Try next port
+        // Try next port only in development
         const nextPort = port + 1;
         if (nextPort <= 9010) {
           setTimeout(() => {
@@ -983,7 +985,7 @@ const startServer = async () => {
               logger.info(`Server running on port ${nextPort}`);
               logger.info(`Local URL: http://localhost:${nextPort}`);
             });
-          }, 1000);
+            }, 1000);
         } else {
           logger.error('No available ports found');
           process.exit(1);
