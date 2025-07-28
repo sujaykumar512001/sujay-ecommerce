@@ -86,20 +86,44 @@ if (!uri) {
 } else {
   console.log('🔗 Connecting to MongoDB...');
   
+  // Add a timeout to prevent hanging
+  const connectionTimeout = setTimeout(() => {
+    console.error('❌ MongoDB connection timeout after 10 seconds');
+    process.exit(1);
+  }, 10000);
+
   mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 10000,
-    socketTimeoutMS: 45000,
-    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000, // Reduced timeout
+    socketTimeoutMS: 10000, // Reduced timeout
+    maxPoolSize: 5,
+    connectTimeoutMS: 5000, // Connection timeout
   })
   .then(() => {
+    clearTimeout(connectionTimeout);
     console.log('✅ MongoDB connected successfully');
   })
   .catch((err) => {
+    clearTimeout(connectionTimeout);
     console.error('❌ MongoDB connection error:', err.message);
     console.error('Full error details:', err);
     process.exit(1); // Stop the app if DB fails
+  });
+
+  // Add connection event listeners for better debugging
+  mongoose.connection.on('error', (err) => {
+    clearTimeout(connectionTimeout);
+    console.error('❌ MongoDB connection error event:', err.message);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.log('⚠️ MongoDB disconnected');
+  });
+
+  mongoose.connection.on('connected', () => {
+    clearTimeout(connectionTimeout);
+    console.log('✅ MongoDB connection event: connected');
   });
 }
 
