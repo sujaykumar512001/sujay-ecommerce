@@ -67,7 +67,7 @@ app.use(session({
   }
 }));
 
-// MongoDB connection
+// MongoDB connection - Serverless-friendly approach
 const uri = process.env.MONGODB_URI;
 
 console.log('=== MongoDB Connection Debug ===');
@@ -80,52 +80,41 @@ if (uri) {
 }
 console.log('================================');
 
-if (!uri) {
-  console.error('❌ No MongoDB URI found! Please set MONGODB_URI environment variable.');
-  console.log('⚠️ App will continue without MongoDB connection');
-} else {
+// For serverless environments, we'll connect on-demand instead of at startup
+console.log('⚠️ Serverless environment detected - MongoDB will connect on-demand');
+console.log('📝 Connection will be established when needed for database operations');
+
+// Create a connection function for on-demand use
+const connectToMongoDB = async () => {
+  if (!uri) {
+    throw new Error('No MongoDB URI found! Please set MONGODB_URI environment variable.');
+  }
+  
+  if (mongoose.connection.readyState === 1) {
+    console.log('✅ MongoDB already connected');
+    return;
+  }
+  
   console.log('🔗 Connecting to MongoDB...');
   
-  // Add a timeout to prevent hanging
-  const connectionTimeout = setTimeout(() => {
-    console.error('❌ MongoDB connection timeout after 10 seconds');
-    console.log('⚠️ App will continue without MongoDB connection');
-  }, 10000);
-
-  mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000, // Reduced timeout
-    socketTimeoutMS: 10000, // Reduced timeout
-    maxPoolSize: 5,
-    connectTimeoutMS: 5000, // Connection timeout
-  })
-  .then(() => {
-    clearTimeout(connectionTimeout);
+  try {
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
+      maxPoolSize: 5,
+      connectTimeoutMS: 5000,
+    });
     console.log('✅ MongoDB connected successfully');
-  })
-  .catch((err) => {
-    clearTimeout(connectionTimeout);
+  } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
-    console.error('Full error details:', err);
-    console.log('⚠️ App will continue without MongoDB connection');
-  });
+    throw err;
+  }
+};
 
-  // Add connection event listeners for better debugging
-  mongoose.connection.on('error', (err) => {
-    clearTimeout(connectionTimeout);
-    console.error('❌ MongoDB connection error event:', err.message);
-  });
-
-  mongoose.connection.on('disconnected', () => {
-    console.log('⚠️ MongoDB disconnected');
-  });
-
-  mongoose.connection.on('connected', () => {
-    clearTimeout(connectionTimeout);
-    console.log('✅ MongoDB connection event: connected');
-  });
-}
+// Make the connection function available globally
+global.connectToMongoDB = connectToMongoDB;
 
 // Debug route to check environment variables
 app.get("/debug", (req, res) => {
@@ -147,31 +136,64 @@ app.get("/debug", (req, res) => {
 });
 
 // Health check route
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
-    mongodb: {
-      status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-      readyState: mongoose.connection.readyState,
-      uriExists: !!process.env.MONGODB_URI,
-      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
-    },
-    envVars: {
-      NODE_ENV: process.env.NODE_ENV,
-      MONGODB_URI: !!process.env.MONGODB_URI,
-      CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
-      CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
-      CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
-      SESSION_SECRET: !!process.env.SESSION_SECRET,
-      JWT_SECRET: !!process.env.JWT_SECRET
-    },
-    debug: {
-      totalEnvVars: Object.keys(process.env).length,
-      hasMongoUri: !!process.env.MONGODB_URI
+app.get("/health", async (req, res) => {
+  try {
+    // Try to connect to MongoDB if not already connected
+    if (process.env.MONGODB_URI && mongoose.connection.readyState !== 1) {
+      await connectToMongoDB();
     }
-  });
+    
+    res.json({
+      status: "ok",
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString(),
+      mongodb: {
+        status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+        readyState: mongoose.connection.readyState,
+        uriExists: !!process.env.MONGODB_URI,
+        uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
+      },
+      envVars: {
+        NODE_ENV: process.env.NODE_ENV,
+        MONGODB_URI: !!process.env.MONGODB_URI,
+        CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
+        CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
+        SESSION_SECRET: !!process.env.SESSION_SECRET,
+        JWT_SECRET: !!process.env.JWT_SECRET
+      },
+      debug: {
+        totalEnvVars: Object.keys(process.env).length,
+        hasMongoUri: !!process.env.MONGODB_URI
+      }
+    });
+  } catch (error) {
+    res.json({
+      status: "ok",
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString(),
+      mongodb: {
+        status: 'error',
+        readyState: mongoose.connection.readyState,
+        error: error.message,
+        uriExists: !!process.env.MONGODB_URI,
+        uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
+      },
+      envVars: {
+        NODE_ENV: process.env.NODE_ENV,
+        MONGODB_URI: !!process.env.MONGODB_URI,
+        CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
+        CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
+        SESSION_SECRET: !!process.env.SESSION_SECRET,
+        JWT_SECRET: !!process.env.JWT_SECRET
+      },
+      debug: {
+        totalEnvVars: Object.keys(process.env).length,
+        hasMongoUri: !!process.env.MONGODB_URI
+      }
+    });
+  }
 });
 
 // Basic routes
