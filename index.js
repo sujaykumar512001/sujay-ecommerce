@@ -50,15 +50,11 @@ app.use(hpp());
 // Compression
 app.use(compression());
 
-// Session configuration
+// Session configuration - Simplified for serverless
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
   resave: true,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce",
-    touchAfter: 0
-  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
@@ -67,25 +63,16 @@ app.use(session({
   }
 }));
 
-// MongoDB connection - Serverless-friendly approach
-const uri = process.env.MONGODB_URI;
-
-console.log('=== MongoDB Connection Debug ===');
+// MongoDB connection - Completely removed from startup for serverless
+console.log('=== Serverless Environment Setup ===');
 console.log('Environment:', process.env.NODE_ENV);
-console.log('MONGODB_URI exists:', !!uri);
-console.log('URI length:', uri ? uri.length : 0);
-if (uri) {
-  console.log('URI starts with:', uri.substring(0, 20) + '...');
-  console.log('URI contains cluster:', uri.includes('cluster0.lviucyb.mongodb.net'));
-}
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
 console.log('================================');
 
-// For serverless environments, we'll connect on-demand instead of at startup
-console.log('⚠️ Serverless environment detected - MongoDB will connect on-demand');
-console.log('📝 Connection will be established when needed for database operations');
-
-// Create a connection function for on-demand use
+// Create a connection function for on-demand use only
 const connectToMongoDB = async () => {
+  const uri = process.env.MONGODB_URI;
+  
   if (!uri) {
     throw new Error('No MongoDB URI found! Please set MONGODB_URI environment variable.');
   }
@@ -135,65 +122,32 @@ app.get("/debug", (req, res) => {
   });
 });
 
-// Health check route
-app.get("/health", async (req, res) => {
-  try {
-    // Try to connect to MongoDB if not already connected
-    if (process.env.MONGODB_URI && mongoose.connection.readyState !== 1) {
-      await connectToMongoDB();
+// Health check route - Simplified
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+    mongodb: {
+      status: 'not_connected',
+      readyState: mongoose.connection.readyState,
+      uriExists: !!process.env.MONGODB_URI,
+      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
+    },
+    envVars: {
+      NODE_ENV: process.env.NODE_ENV,
+      MONGODB_URI: !!process.env.MONGODB_URI,
+      CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
+      CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
+      CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
+      SESSION_SECRET: !!process.env.SESSION_SECRET,
+      JWT_SECRET: !!process.env.JWT_SECRET
+    },
+    debug: {
+      totalEnvVars: Object.keys(process.env).length,
+      hasMongoUri: !!process.env.MONGODB_URI
     }
-    
-    res.json({
-      status: "ok",
-      environment: process.env.NODE_ENV || 'development',
-      timestamp: new Date().toISOString(),
-      mongodb: {
-        status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-        readyState: mongoose.connection.readyState,
-        uriExists: !!process.env.MONGODB_URI,
-        uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
-      },
-      envVars: {
-        NODE_ENV: process.env.NODE_ENV,
-        MONGODB_URI: !!process.env.MONGODB_URI,
-        CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
-        CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
-        CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
-        SESSION_SECRET: !!process.env.SESSION_SECRET,
-        JWT_SECRET: !!process.env.JWT_SECRET
-      },
-      debug: {
-        totalEnvVars: Object.keys(process.env).length,
-        hasMongoUri: !!process.env.MONGODB_URI
-      }
-    });
-  } catch (error) {
-    res.json({
-      status: "ok",
-      environment: process.env.NODE_ENV || 'development',
-      timestamp: new Date().toISOString(),
-      mongodb: {
-        status: 'error',
-        readyState: mongoose.connection.readyState,
-        error: error.message,
-        uriExists: !!process.env.MONGODB_URI,
-        uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
-      },
-      envVars: {
-        NODE_ENV: process.env.NODE_ENV,
-        MONGODB_URI: !!process.env.MONGODB_URI,
-        CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
-        CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
-        CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
-        SESSION_SECRET: !!process.env.SESSION_SECRET,
-        JWT_SECRET: !!process.env.JWT_SECRET
-      },
-      debug: {
-        totalEnvVars: Object.keys(process.env).length,
-        hasMongoUri: !!process.env.MONGODB_URI
-      }
-    });
-  }
+  });
 });
 
 // Basic routes
