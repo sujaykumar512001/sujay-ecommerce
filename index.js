@@ -68,18 +68,25 @@ app.use(session({
 }));
 
 // MongoDB connection
+const uri = process.env.MONGODB_URI;
+
 console.log('=== MongoDB Connection Debug ===');
 console.log('Environment:', process.env.NODE_ENV);
-console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-console.log('URI length:', process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
+console.log('MONGODB_URI exists:', !!uri);
+console.log('URI length:', uri ? uri.length : 0);
+if (uri) {
+  console.log('URI starts with:', uri.substring(0, 20) + '...');
+  console.log('URI contains cluster:', uri.includes('cluster0.lviucyb.mongodb.net'));
+}
 console.log('================================');
 
-if (!process.env.MONGODB_URI) {
+if (!uri) {
   console.error('❌ No MongoDB URI found! Please set MONGODB_URI environment variable.');
+  process.exit(1);
 } else {
   console.log('🔗 Connecting to MongoDB...');
   
-  mongoose.connect(process.env.MONGODB_URI, {
+  mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 10000,
@@ -89,9 +96,10 @@ if (!process.env.MONGODB_URI) {
   .then(() => {
     console.log('✅ MongoDB connected successfully');
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
-    console.error('Full error:', err);
+    console.error('Full error details:', err);
+    process.exit(1); // Stop the app if DB fails
   });
 }
 
