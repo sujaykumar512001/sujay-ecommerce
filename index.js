@@ -9,6 +9,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
+const connectToDatabase = require('./config/db');
 
 // Load environment variables only in development
 if (process.env.NODE_ENV !== 'production') {
@@ -63,44 +64,20 @@ app.use(session({
   }
 }));
 
-// MongoDB connection - Non-blocking for serverless
-const uri = process.env.MONGODB_URI;
+// MongoDB connection - Vercel-compatible pattern
+console.log("🔗 MongoDB URI exists:", !!process.env.MONGODB_URI);
+console.log("🔗 MongoDB URI length:", process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
 
-console.log("🔗 MongoDB URI exists:", !!uri);
-console.log("🔗 MongoDB URI length:", uri ? uri.length : 0);
-
-// Don't connect at startup - will connect on-demand
-console.log("⚠️ MongoDB connection deferred for serverless environment");
-
-// Create a connection function for on-demand use
-const connectToMongoDB = async () => {
-  if (!uri) {
-    throw new Error('MONGODB_URI not set');
-  }
-  
-  if (mongoose.connection.readyState === 1) {
-    return; // Already connected
-  }
-  
-  console.log("🔗 Connecting to MongoDB...");
-  
+// Initialize MongoDB connection on app startup
+(async () => {
   try {
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 10000,
-      maxPoolSize: 5,
-    });
-    console.log("✅ MongoDB connected");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err.message);
-    throw err;
+    await connectToDatabase();
+    console.log("✅ MongoDB connection established on startup");
+  } catch (error) {
+    console.error("❌ Failed to connect to MongoDB on startup:", error.message);
+    console.log("⚠️ App will continue without MongoDB connection");
   }
-};
-
-// Make available globally
-global.connectToMongoDB = connectToMongoDB;
+})();
 
 // Debug route to check environment variables
 app.get("/debug", (req, res) => {
@@ -128,7 +105,7 @@ app.get("/mongo-status", async (req, res) => {
   try {
     // Try to connect if not already connected
     if (process.env.MONGODB_URI && mongoose.connection.readyState !== 1) {
-      await connectToMongoDB();
+      await connectToDatabase();
     }
     
     res.json({
