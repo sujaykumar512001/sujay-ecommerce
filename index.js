@@ -80,9 +80,52 @@ if (uri) {
 }
 console.log('================================');
 
-// Skip MongoDB connection for now to get the app running
-console.log('⚠️ Skipping MongoDB connection for now - app will run without DB');
-console.log('📝 MongoDB will be connected when needed for specific operations');
+if (!uri) {
+  console.error('❌ No MongoDB URI found! Please set MONGODB_URI environment variable.');
+  console.log('⚠️ App will continue without MongoDB connection');
+} else {
+  console.log('🔗 Connecting to MongoDB...');
+  
+  // Add a timeout to prevent hanging
+  const connectionTimeout = setTimeout(() => {
+    console.error('❌ MongoDB connection timeout after 10 seconds');
+    console.log('⚠️ App will continue without MongoDB connection');
+  }, 10000);
+
+  mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // Reduced timeout
+    socketTimeoutMS: 10000, // Reduced timeout
+    maxPoolSize: 5,
+    connectTimeoutMS: 5000, // Connection timeout
+  })
+  .then(() => {
+    clearTimeout(connectionTimeout);
+    console.log('✅ MongoDB connected successfully');
+  })
+  .catch((err) => {
+    clearTimeout(connectionTimeout);
+    console.error('❌ MongoDB connection error:', err.message);
+    console.error('Full error details:', err);
+    console.log('⚠️ App will continue without MongoDB connection');
+  });
+
+  // Add connection event listeners for better debugging
+  mongoose.connection.on('error', (err) => {
+    clearTimeout(connectionTimeout);
+    console.error('❌ MongoDB connection error event:', err.message);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.log('⚠️ MongoDB disconnected');
+  });
+
+  mongoose.connection.on('connected', () => {
+    clearTimeout(connectionTimeout);
+    console.log('✅ MongoDB connection event: connected');
+  });
+}
 
 // Debug route to check environment variables
 app.get("/debug", (req, res) => {
