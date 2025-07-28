@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error("❌ MONGODB_URI is not defined in environment variables");
+  console.warn("⚠️ MONGODB_URI is not defined in environment variables");
+  console.warn("⚠️ MongoDB connection will not be available");
 }
 
 let cached = global.mongoose;
@@ -13,6 +14,10 @@ if (!cached) {
 }
 
 async function connectToDatabase() {
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is not defined in environment variables");
+  }
+
   if (cached.conn) {
     console.log("✅ Using cached MongoDB connection");
     return cached.conn;
