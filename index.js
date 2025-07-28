@@ -63,29 +63,44 @@ app.use(session({
   }
 }));
 
-// MongoDB connection with debugging
+// MongoDB connection - Non-blocking for serverless
 const uri = process.env.MONGODB_URI;
 
-console.log("🔗 Connecting to MongoDB:", uri ? `${uri.substring(0, 30)}...` : 'NOT SET'); // TEMP log
+console.log("🔗 MongoDB URI exists:", !!uri);
+console.log("🔗 MongoDB URI length:", uri ? uri.length : 0);
 
-if (uri) {
-  mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 10000,
-    socketTimeoutMS: 45000,
-    maxPoolSize: 10,
-  })
-  .then(() => {
+// Don't connect at startup - will connect on-demand
+console.log("⚠️ MongoDB connection deferred for serverless environment");
+
+// Create a connection function for on-demand use
+const connectToMongoDB = async () => {
+  if (!uri) {
+    throw new Error('MONGODB_URI not set');
+  }
+  
+  if (mongoose.connection.readyState === 1) {
+    return; // Already connected
+  }
+  
+  console.log("🔗 Connecting to MongoDB...");
+  
+  try {
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
+      maxPoolSize: 5,
+    });
     console.log("✅ MongoDB connected");
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error("❌ MongoDB connection error:", err.message);
-    console.error("Full error:", err);
-  });
-} else {
-  console.error("❌ MONGODB_URI not set in environment variables");
-}
+    throw err;
+  }
+};
+
+// Make available globally
+global.connectToMongoDB = connectToMongoDB;
 
 // Debug route to check environment variables
 app.get("/debug", (req, res) => {
@@ -107,15 +122,34 @@ app.get("/debug", (req, res) => {
 });
 
 // MongoDB status route for debugging
-app.get("/mongo-status", (req, res) => {
+app.get("/mongo-status", async (req, res) => {
   const states = ["disconnected", "connected", "connecting", "disconnecting"];
-  res.json({
-    mongoState: states[mongoose.connection.readyState],
-    readyState: mongoose.connection.readyState,
-    uriExists: !!process.env.MONGODB_URI,
-    uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
-    uriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 30) + '...' : 'NOT SET'
-  });
+  
+  try {
+    // Try to connect if not already connected
+    if (process.env.MONGODB_URI && mongoose.connection.readyState !== 1) {
+      await connectToMongoDB();
+    }
+    
+    res.json({
+      mongoState: states[mongoose.connection.readyState],
+      readyState: mongoose.connection.readyState,
+      uriExists: !!process.env.MONGODB_URI,
+      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
+      uriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 30) + '...' : 'NOT SET',
+      connectionAttempted: true
+    });
+  } catch (error) {
+    res.json({
+      mongoState: states[mongoose.connection.readyState],
+      readyState: mongoose.connection.readyState,
+      uriExists: !!process.env.MONGODB_URI,
+      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
+      uriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 30) + '...' : 'NOT SET',
+      connectionAttempted: true,
+      error: error.message
+    });
+  }
 });
 
 // Health check route - Simplified
