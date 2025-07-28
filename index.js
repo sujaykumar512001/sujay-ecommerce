@@ -82,14 +82,14 @@ console.log('================================');
 
 if (!uri) {
   console.error('❌ No MongoDB URI found! Please set MONGODB_URI environment variable.');
-  process.exit(1);
+  console.log('⚠️ App will continue without MongoDB connection');
 } else {
   console.log('🔗 Connecting to MongoDB...');
   
   // Add a timeout to prevent hanging
   const connectionTimeout = setTimeout(() => {
     console.error('❌ MongoDB connection timeout after 10 seconds');
-    process.exit(1);
+    console.log('⚠️ App will continue without MongoDB connection');
   }, 10000);
 
   mongoose.connect(uri, {
@@ -108,7 +108,7 @@ if (!uri) {
     clearTimeout(connectionTimeout);
     console.error('❌ MongoDB connection error:', err.message);
     console.error('Full error details:', err);
-    process.exit(1); // Stop the app if DB fails
+    console.log('⚠️ App will continue without MongoDB connection');
   });
 
   // Add connection event listeners for better debugging
@@ -216,7 +216,10 @@ app.use((req, res) => {
 // Start server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📊 MongoDB Status: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
+  console.log(`🔗 MongoDB URI: ${process.env.MONGODB_URI ? 'Set' : 'Not Set'}`);
 });
 
 module.exports = app; 
