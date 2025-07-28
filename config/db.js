@@ -15,7 +15,8 @@ if (!cached) {
 
 async function connectToDatabase() {
   if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is not defined in environment variables");
+    console.warn("⚠️ Skipping MongoDB connection: MONGODB_URI is not set");
+    return null;
   }
 
   if (cached.conn) {

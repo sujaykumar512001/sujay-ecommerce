@@ -17,6 +17,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 
+// EJS view engine setup
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+
 // Trust proxy for production
 app.set("trust proxy", 1);
 
@@ -80,8 +84,13 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // MongoDB connection - Completely non-blocking for serverless
-console.log("🔗 MongoDB URI exists:", !!process.env.MONGODB_URI);
-console.log("🔗 MongoDB URI length:", process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
+const mongoUri = process.env.NODE_ENV === 'production' 
+  ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
+  : process.env.MONGODB_URI;
+
+console.log("🔗 MongoDB URI exists:", !!mongoUri);
+console.log("🔗 MongoDB URI length:", mongoUri ? mongoUri.length : 0);
+console.log("🔗 Using URI for:", process.env.NODE_ENV === 'production' ? 'production' : 'development');
 
 // Don't connect at startup - only connect when explicitly requested
 console.log("⚠️ MongoDB connection deferred - will connect on-demand only");
@@ -95,12 +104,17 @@ app.get("/debug", (req, res) => {
     }
   });
   
+  const mongoUri = process.env.NODE_ENV === 'production' 
+    ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
+    : process.env.MONGODB_URI;
+  
   res.json({
     message: 'Environment Variables Debug',
     environment: process.env.NODE_ENV || 'development',
     totalEnvVars: Object.keys(process.env).length,
     relevantEnvVars: envVars,
-    mongoUri: process.env.MONGODB_URI ? `[SET - ${process.env.MONGODB_URI.length} chars]` : '[NOT SET]',
+    mongoUri: mongoUri ? `[SET - ${mongoUri.length} chars]` : '[NOT SET]',
+    mongoUriType: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     timestamp: new Date().toISOString()
   });
 });
@@ -108,36 +122,45 @@ app.get("/debug", (req, res) => {
 // MongoDB status route for debugging
 app.get("/mongo-status", async (req, res) => {
   const states = ["disconnected", "connected", "connecting", "disconnecting"];
+  const mongoUri = process.env.NODE_ENV === 'production' 
+    ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
+    : process.env.MONGODB_URI;
   
   try {
     // Try to connect if not already connected
-    if (process.env.MONGODB_URI && mongoose.connection.readyState !== 1) {
+    if (mongoUri && mongoose.connection.readyState !== 1) {
       await connectToDatabase();
     }
     
     res.json({
       mongoState: states[mongoose.connection.readyState],
       readyState: mongoose.connection.readyState,
-      uriExists: !!process.env.MONGODB_URI,
-      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
-      uriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 30) + '...' : 'NOT SET',
-      connectionAttempted: true
+      uriExists: !!mongoUri,
+      uriLength: mongoUri ? mongoUri.length : 0,
+      uriStart: mongoUri ? mongoUri.substring(0, 30) + '...' : 'NOT SET',
+      connectionAttempted: true,
+      environment: process.env.NODE_ENV || 'development'
     });
   } catch (error) {
     res.json({
       mongoState: states[mongoose.connection.readyState],
       readyState: mongoose.connection.readyState,
-      uriExists: !!process.env.MONGODB_URI,
-      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
-      uriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 30) + '...' : 'NOT SET',
+      uriExists: !!mongoUri,
+      uriLength: mongoUri ? mongoUri.length : 0,
+      uriStart: mongoUri ? mongoUri.substring(0, 30) + '...' : 'NOT SET',
       connectionAttempted: true,
-      error: error.message
+      error: error.message,
+      environment: process.env.NODE_ENV || 'development'
     });
   }
 });
 
 // Health check route - Non-blocking
 app.get("/health", (req, res) => {
+  const mongoUri = process.env.NODE_ENV === 'production' 
+    ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
+    : process.env.MONGODB_URI;
+    
   res.json({
     status: "ok",
     environment: process.env.NODE_ENV || 'development',
@@ -145,12 +168,13 @@ app.get("/health", (req, res) => {
     mongodb: {
       status: 'deferred',
       readyState: mongoose.connection.readyState,
-      uriExists: !!process.env.MONGODB_URI,
-      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
+      uriExists: !!mongoUri,
+      uriLength: mongoUri ? mongoUri.length : 0
     },
     envVars: {
       NODE_ENV: process.env.NODE_ENV,
-      MONGODB_URI: !!process.env.MONGODB_URI,
+      MONGODB_URI: !!mongoUri,
+      MONGODB_URI_PROD: !!process.env.MONGODB_URI_PROD,
       CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
       CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
       CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET,
@@ -159,7 +183,7 @@ app.get("/health", (req, res) => {
     },
     debug: {
       totalEnvVars: Object.keys(process.env).length,
-      hasMongoUri: !!process.env.MONGODB_URI
+      hasMongoUri: !!mongoUri
     }
   });
 });
