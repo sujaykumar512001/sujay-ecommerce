@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -36,12 +35,14 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
+// Rate limiting - Simplified for serverless
+if (process.env.NODE_ENV !== 'production') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+  });
+  app.use(limiter);
+}
 
 // Data sanitization
 app.use(mongoSanitize());
@@ -51,18 +52,22 @@ app.use(hpp());
 // Compression
 app.use(compression());
 
-// Session configuration - Simplified for serverless
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
-  resave: true,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  }
-}));
+// Session configuration - Disabled for serverless
+if (process.env.NODE_ENV !== 'production') {
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    }
+  }));
+} else {
+  console.log("⚠️ Sessions disabled for serverless environment");
+}
 
 // MongoDB connection - Completely non-blocking for serverless
 console.log("🔗 MongoDB URI exists:", !!process.env.MONGODB_URI);
@@ -188,13 +193,18 @@ app.use((req, res) => {
   });
 });
 
-// Start server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📊 MongoDB Status: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
-  console.log(`🔗 MongoDB URI: ${process.env.MONGODB_URI ? 'Set' : 'Not Set'}`);
-});
+// Serverless-compatible startup
+if (process.env.NODE_ENV !== 'production') {
+  // Only start server in development
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📊 MongoDB Status: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
+    console.log(`🔗 MongoDB URI: ${process.env.MONGODB_URI ? 'Set' : 'Not Set'}`);
+  });
+} else {
+  console.log("🚀 Serverless environment - app ready for function calls");
+}
 
 module.exports = app; 
