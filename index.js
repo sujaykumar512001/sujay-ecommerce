@@ -8,7 +8,17 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
-const connectToDatabase = require('./config/db');
+// MongoDB connection - Handle missing module gracefully
+let connectToDatabase;
+try {
+  connectToDatabase = require('./config/db');
+} catch (error) {
+  console.warn("⚠️ config/db module not found, using fallback");
+  connectToDatabase = async () => {
+    console.log("⚠️ MongoDB connection not available - config/db module missing");
+    return null;
+  };
+}
 
 // Load environment variables only in development
 if (process.env.NODE_ENV !== 'production') {
