@@ -63,45 +63,29 @@ app.use(session({
   }
 }));
 
-// MongoDB connection - Completely removed from startup for serverless
-console.log('=== Serverless Environment Setup ===');
-console.log('Environment:', process.env.NODE_ENV);
-console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-console.log('================================');
+// MongoDB connection with debugging
+const uri = process.env.MONGODB_URI;
 
-// Create a connection function for on-demand use only
-const connectToMongoDB = async () => {
-  const uri = process.env.MONGODB_URI;
-  
-  if (!uri) {
-    throw new Error('No MongoDB URI found! Please set MONGODB_URI environment variable.');
-  }
-  
-  if (mongoose.connection.readyState === 1) {
-    console.log('✅ MongoDB already connected');
-    return;
-  }
-  
-  console.log('🔗 Connecting to MongoDB...');
-  
-  try {
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 10000,
-      maxPoolSize: 5,
-      connectTimeoutMS: 5000,
-    });
-    console.log('✅ MongoDB connected successfully');
-  } catch (err) {
-    console.error('❌ MongoDB connection error:', err.message);
-    throw err;
-  }
-};
+console.log("🔗 Connecting to MongoDB:", uri ? `${uri.substring(0, 30)}...` : 'NOT SET'); // TEMP log
 
-// Make the connection function available globally
-global.connectToMongoDB = connectToMongoDB;
+if (uri) {
+  mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 10,
+  })
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+    console.error("Full error:", err);
+  });
+} else {
+  console.error("❌ MONGODB_URI not set in environment variables");
+}
 
 // Debug route to check environment variables
 app.get("/debug", (req, res) => {
@@ -119,6 +103,18 @@ app.get("/debug", (req, res) => {
     relevantEnvVars: envVars,
     mongoUri: process.env.MONGODB_URI ? `[SET - ${process.env.MONGODB_URI.length} chars]` : '[NOT SET]',
     timestamp: new Date().toISOString()
+  });
+});
+
+// MongoDB status route for debugging
+app.get("/mongo-status", (req, res) => {
+  const states = ["disconnected", "connected", "connecting", "disconnecting"];
+  res.json({
+    mongoState: states[mongoose.connection.readyState],
+    readyState: mongoose.connection.readyState,
+    uriExists: !!process.env.MONGODB_URI,
+    uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
+    uriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 30) + '...' : 'NOT SET'
   });
 });
 
