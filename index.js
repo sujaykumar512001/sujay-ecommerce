@@ -199,13 +199,31 @@ app.get("/health", (req, res) => {
 });
 
 // Basic routes
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  try {
+    // For now, render the dashboard without products (we'll add them later)
+    res.render('index', {
+      title: 'Yadav Collection - Premium Fashion & Art',
+      featuredProducts: [], // Empty array for now
+      message: null
+    });
+  } catch (error) {
+    console.error('Error rendering dashboard:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Failed to load dashboard'
+    });
+  }
+});
+
+// API routes (for JSON responses)
+app.get('/api', (req, res) => {
   res.json({
     success: true,
     message: 'E-commerce API is running!',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
-    mongodb: 'deferred' // Don't check connection status on main route
+    mongodb: 'deferred'
   });
 });
 
