@@ -24,33 +24,43 @@ app.set("trust proxy", 1);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
-}));
+// Security middleware - Simplified for serverless
+if (process.env.NODE_ENV !== 'production') {
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
+  }));
+} else {
+  console.log("⚠️ Helmet disabled for serverless environment");
+}
 
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:3000",
   credentials: true
 }));
 
-// Rate limiting - Simplified for serverless
+// Rate limiting - Disabled for serverless
 if (process.env.NODE_ENV !== 'production') {
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100 // limit each IP to 100 requests per windowMs
   });
   app.use(limiter);
+} else {
+  console.log("⚠️ Rate limiting disabled for serverless environment");
 }
 
-// Data sanitization
-app.use(mongoSanitize());
-app.use(xss());
-app.use(hpp());
-
-// Compression
-app.use(compression());
+// Data sanitization - Simplified for serverless
+if (process.env.NODE_ENV !== 'production') {
+  app.use(mongoSanitize());
+  app.use(xss());
+  app.use(hpp());
+  app.use(compression());
+} else {
+  // Minimal middleware for serverless
+  app.use(compression());
+  console.log("⚠️ Data sanitization disabled for serverless environment");
+}
 
 // Session configuration - Disabled for serverless
 if (process.env.NODE_ENV !== 'production') {
