@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const helmet = require('helmet');
@@ -11,8 +10,10 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables only in development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const app = express();
 
@@ -55,9 +56,7 @@ app.use(session({
   resave: true,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.NODE_ENV === 'production' 
-      ? (process.env.MONGODB_URI_PROD || process.env.MONGODB_URI)
-      : (process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce"),
+    mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce",
     touchAfter: 0
   }),
   cookie: {
@@ -69,29 +68,18 @@ app.use(session({
 }));
 
 // MongoDB connection
-const getMongoUri = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.MONGODB_URI_PROD || process.env.MONGODB_URI;
-  }
-  return process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce";
-};
-
-const mongoUri = getMongoUri();
-
 console.log('=== MongoDB Connection Debug ===');
 console.log('Environment:', process.env.NODE_ENV);
-console.log('MongoDB URI exists:', !!mongoUri);
-console.log('MONGODB_URI_PROD exists:', !!process.env.MONGODB_URI_PROD);
 console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-console.log('URI length:', mongoUri ? mongoUri.length : 0);
+console.log('URI length:', process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
 console.log('================================');
 
-if (!mongoUri) {
-  console.error('❌ No MongoDB URI found! Please set MONGODB_URI_PROD or MONGODB_URI environment variable.');
+if (!process.env.MONGODB_URI) {
+  console.error('❌ No MongoDB URI found! Please set MONGODB_URI environment variable.');
 } else {
   console.log('🔗 Connecting to MongoDB...');
   
-  mongoose.connect(mongoUri, {
+  mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 10000,
@@ -121,14 +109,13 @@ app.get("/debug", (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     totalEnvVars: Object.keys(process.env).length,
     relevantEnvVars: envVars,
-    mongoUri: getMongoUri() ? `[SET - ${getMongoUri().length} chars]` : '[NOT SET]',
+    mongoUri: process.env.MONGODB_URI ? `[SET - ${process.env.MONGODB_URI.length} chars]` : '[NOT SET]',
     timestamp: new Date().toISOString()
   });
 });
 
 // Health check route
 app.get("/health", (req, res) => {
-  const mongoUri = getMongoUri();
   res.json({
     status: "ok",
     environment: process.env.NODE_ENV || 'development',
@@ -136,12 +123,11 @@ app.get("/health", (req, res) => {
     mongodb: {
       status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
       readyState: mongoose.connection.readyState,
-      uriExists: !!mongoUri,
-      uriLength: mongoUri ? mongoUri.length : 0
+      uriExists: !!process.env.MONGODB_URI,
+      uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
     },
     envVars: {
       NODE_ENV: process.env.NODE_ENV,
-      MONGODB_URI_PROD: !!process.env.MONGODB_URI_PROD,
       MONGODB_URI: !!process.env.MONGODB_URI,
       CLOUDINARY_CLOUD_NAME: !!process.env.CLOUDINARY_CLOUD_NAME,
       CLOUDINARY_API_KEY: !!process.env.CLOUDINARY_API_KEY,
@@ -151,7 +137,7 @@ app.get("/health", (req, res) => {
     },
     debug: {
       totalEnvVars: Object.keys(process.env).length,
-      hasMongoUri: !!mongoUri
+      hasMongoUri: !!process.env.MONGODB_URI
     }
   });
 });
