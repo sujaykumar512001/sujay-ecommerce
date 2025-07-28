@@ -3,4 +3,13 @@
 !index.js
 !package.json
 !vercel.json
-!.vercelignore 
+!.vercelignore
+!config/
+!controllers/
+!middleware/
+!models/
+!routes/
+!services/
+!utils/
+!views/
+!env.example 
