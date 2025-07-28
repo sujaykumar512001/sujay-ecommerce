@@ -64,20 +64,12 @@ app.use(session({
   }
 }));
 
-// MongoDB connection - Vercel-compatible pattern
+// MongoDB connection - Completely non-blocking for serverless
 console.log("🔗 MongoDB URI exists:", !!process.env.MONGODB_URI);
 console.log("🔗 MongoDB URI length:", process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
 
-// Initialize MongoDB connection on app startup
-(async () => {
-  try {
-    await connectToDatabase();
-    console.log("✅ MongoDB connection established on startup");
-  } catch (error) {
-    console.error("❌ Failed to connect to MongoDB on startup:", error.message);
-    console.log("⚠️ App will continue without MongoDB connection");
-  }
-})();
+// Don't connect at startup - only connect when explicitly requested
+console.log("⚠️ MongoDB connection deferred - will connect on-demand only");
 
 // Debug route to check environment variables
 app.get("/debug", (req, res) => {
@@ -129,14 +121,14 @@ app.get("/mongo-status", async (req, res) => {
   }
 });
 
-// Health check route - Simplified
+// Health check route - Non-blocking
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
     mongodb: {
-      status: 'not_connected',
+      status: 'deferred',
       readyState: mongoose.connection.readyState,
       uriExists: !!process.env.MONGODB_URI,
       uriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
@@ -164,7 +156,7 @@ app.get('/', (req, res) => {
     message: 'E-commerce API is running!',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    mongodb: 'deferred' // Don't check connection status on main route
   });
 });
 
